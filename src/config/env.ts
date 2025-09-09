@@ -15,6 +15,15 @@ const envSchema = z.object({
   RATE_LIMIT_WINDOW_MS: z.string().transform(Number).default('900000'),
   RATE_LIMIT_MAX_REQUESTS: z.string().transform(Number).default('100'),
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug']).default('info'),
+  // Database connection retry config
+  DB_CONNECT_MAX_RETRIES: z.string().transform(Number).default('30'),
+  DB_CONNECT_RETRY_MS: z.string().transform(Number).default('5000'),
+  // Cloudinary
+  CLOUDARY_DUMMY: z.string().optional().transform(() => ''), // placeholder to keep shape stable
+  CLOUDINARY_URL: z.string().optional(),
+  CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  CLOUDINARY_API_KEY: z.string().optional(),
+  CLOUDINARY_API_SECRET: z.string().optional(),
 });
 
 // Validate and export environment variables

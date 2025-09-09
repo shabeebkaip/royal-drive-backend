@@ -1,19 +1,5 @@
-import type { IVehicle } from '@/types/vehicle';
-import { vehicleRepository, VehicleRepository } from '@/repositories/VehicleRepository.js';
-
-export interface VehicleListFilters {
-  make?: string;
-  model?: string;
-  year?: number;
-  minYear?: number;
-  maxYear?: number;
-  condition?: IVehicle['condition'];
-  bodyType?: IVehicle['bodyType'];
-  fuelType?: IVehicle['engine']['fuelType'];
-  status?: IVehicle['status'];
-  minPrice?: number;
-  maxPrice?: number;
-}
+import type { IVehicle, VehicleListFilters } from '@/types/vehicle';
+import { VehicleRepository } from '@/repositories/VehicleRepository.js';
 
 export class VehicleService {
   constructor(private readonly repo: VehicleRepository) {}
@@ -54,19 +40,10 @@ export class VehicleService {
   }
 
   create(data: Partial<IVehicle>) {
-    return this.repo.create({
-      ...data,
-      location: {
-        ...(data.location as any),
-        dealershipName: 'Royal Drive Canada',
-      } as any,
-    });
+    return this.repo.create(data);
   }
 
   update(id: string, data: Partial<IVehicle>) {
-    if (data.location && (data.location as any).dealershipName) {
-      (data.location as any).dealershipName = 'Royal Drive Canada';
-    }
     return this.repo.update(id, data);
   }
 
@@ -82,13 +59,11 @@ export class VehicleService {
     return this.repo.search(q, { page, limit });
   }
 
-  listByDealership(name: string, page = 1, limit = 10) {
-    return this.repo.findByDealership(name, { page, limit });
-  }
+  // listByDealership removed (no marketplace behavior)
 
   updateStatus(id: string, status: IVehicle['status']) {
     return this.repo.updateStatus(id, status);
   }
 }
 
-export const vehicleService = new VehicleService(vehicleRepository);
+export const vehicleService = new VehicleService(new VehicleRepository());

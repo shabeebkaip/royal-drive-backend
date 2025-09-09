@@ -213,40 +213,6 @@ export class VehicleController {
     }
   }
 
-  // Get vehicles by dealership
-  static async getVehiclesByDealership(req: Request, res: Response): Promise<void> {
-    try {
-  const { dealershipName } = req.params;
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
-      const skip = (page - 1) * limit;
-
-  // Enforce single dealership regardless of param
-  const filter = { 'location.dealershipName': 'Royal Drive Canada' } as any;
-
-  const { data: vehicles, pagination } = await vehicleService.list(filter as any, page, limit);
-
-      const response = createApiResponse(
-        true,
-        `Vehicles for ${dealershipName} retrieved successfully`,
-        {
-          vehicles,
-          pagination
-        }
-      );
-
-      res.status(200).json(response);
-    } catch (error) {
-      const errorResponse = createApiResponse(
-        false,
-        'Failed to retrieve vehicles by dealership',
-        undefined,
-        error instanceof Error ? error.message : 'Unknown error'
-      );
-      res.status(500).json(errorResponse);
-    }
-  }
-
   // Get featured vehicles
   static async getFeaturedVehicles(req: Request, res: Response): Promise<void> {
     try {

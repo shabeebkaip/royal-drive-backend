@@ -5,7 +5,7 @@ import { Document } from 'mongoose';
 // Vehicle interface for car dealership in Ontario, Toronto
 export interface IVehicle extends Document {
   // Basic Vehicle Information
-  vin: string; // Vehicle Identification Number (required by OMVIC)
+  vin?: string; // VIN optional per client
   make: string;
   model: string;
   year: number;
@@ -102,21 +102,7 @@ export interface IVehicle extends Document {
     };
   };
 
-  // Location & Availability
-  location: {
-    dealershipName: string;
-    address: {
-      street: string;
-      city: string;
-      province: string;
-      postalCode: string;
-      country: string;
-    };
-    coordinates?: {
-      latitude: number;
-      longitude: number;
-    };
-  };
+  // Availability (location removed)
 
   // Status
   status: 'available' | 'sold' | 'pending' | 'reserved' | 'on-hold';
@@ -194,4 +180,19 @@ export interface IVehicle extends Document {
   // Timestamps
   createdAt: Date;
   updatedAt: Date;
+}
+
+// Filters for listing/searching vehicles (location removed)
+export interface VehicleListFilters {
+  make?: string;
+  model?: string;
+  year?: number;
+  minYear?: number;
+  maxYear?: number;
+  condition?: IVehicle['condition'];
+  bodyType?: IVehicle['bodyType'];
+  fuelType?: IVehicle['engine']['fuelType'];
+  status?: IVehicle['status'];
+  minPrice?: number;
+  maxPrice?: number;
 }

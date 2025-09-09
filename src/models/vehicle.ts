@@ -6,8 +6,7 @@ const VehicleSchema = new Schema<IVehicle>({
   // Basic Vehicle Information
   vin: {
     type: String,
-    required: [true, 'VIN is required'],
-    unique: true,
+  // VIN is optional per client request
     uppercase: true,
     trim: true,
     minlength: [17, 'VIN must be 17 characters'],
@@ -224,55 +223,7 @@ const VehicleSchema = new Schema<IVehicle>({
     }
   },
 
-  // Location & Availability
-  location: {
-    dealershipName: {
-  type: String,
-  required: [true, 'Dealership name is required'],
-  trim: true,
-  default: 'Royal Drive Canada',
-  enum: ['Royal Drive Canada'],
-  immutable: true
-    },
-    address: {
-      street: {
-        type: String,
-        required: [true, 'Street address is required'],
-        trim: true
-      },
-      city: {
-        type: String,
-        required: [true, 'City is required'],
-        trim: true,
-        default: 'Toronto'
-      },
-      province: {
-        type: String,
-        required: [true, 'Province is required'],
-        trim: true,
-        default: 'Ontario'
-      },
-      postalCode: {
-        type: String,
-        required: [true, 'Postal code is required'],
-        trim: true,
-        validate: {
-          validator: function(v: string) {
-            return /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(v);
-          },
-          message: 'Invalid Canadian postal code format'
-        }
-      },
-      country: {
-        type: String,
-        default: 'Canada'
-      }
-    },
-    coordinates: {
-      latitude: Number,
-      longitude: Number
-    }
-  },
+
 
   // Status
   status: {
@@ -420,16 +371,14 @@ const VehicleSchema = new Schema<IVehicle>({
 });
 
 // Indexes for better performance
-VehicleSchema.index({ vin: 1 }, { unique: true });
+// Ensure VIN is unique only when provided (VIN optional overall)
+VehicleSchema.index({ vin: 1 }, { unique: true, partialFilterExpression: { vin: { $type: 'string' } } });
 VehicleSchema.index({ make: 1, model: 1, year: 1 });
 VehicleSchema.index({ status: 1 });
 VehicleSchema.index({ 'pricing.listPrice': 1 });
 VehicleSchema.index({ condition: 1 });
 VehicleSchema.index({ bodyType: 1 });
 VehicleSchema.index({ 'engine.fuelType': 1 });
-VehicleSchema.index({ 'location.address.city': 1 });
-VehicleSchema.index({ 'internal.stockNumber': 1 }, { unique: true });
-VehicleSchema.index({ 'marketing.slug': 1 }, { unique: true });
 VehicleSchema.index({ createdAt: -1 });
 
 // Virtual for calculating days in inventory

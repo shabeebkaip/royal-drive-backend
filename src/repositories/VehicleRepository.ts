@@ -115,17 +115,6 @@ export class VehicleRepository implements IRepository<IVehicle> {
     return this.findMany(filter as any, { ...options, sortBy: 'createdAt', sortOrder: 'desc' });
   }
 
-  async findByDealership(
-    dealershipName: string,
-    options: PaginationOptions = { page: 1, limit: 10 }
-  ): Promise<PaginatedResult<IVehicle>> {
-    const name = 'Royal Drive Canada';
-    const filter: FilterQuery<IVehicle> = {
-      'location.dealershipName': name,
-    } as any;
-    return this.findMany(filter as any, { ...options, sortBy: 'createdAt', sortOrder: 'desc' });
-  }
-
   async updateStatus(id: string, status: IVehicle['status']): Promise<IVehicle | null> {
     return Vehicle.findByIdAndUpdate(
       id,
@@ -137,4 +126,3 @@ export class VehicleRepository implements IRepository<IVehicle> {
   }
 }
 
-export const vehicleRepository = new VehicleRepository();

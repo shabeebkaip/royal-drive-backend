@@ -13,8 +13,7 @@ router.get('/search', VehicleController.searchVehicles);
 // GET /vehicles/featured - Get featured vehicles
 router.get('/featured', VehicleController.getFeaturedVehicles);
 
-// GET /vehicles/dealership/:dealershipName - Get vehicles by dealership
-router.get('/dealership/:dealershipName', VehicleController.getVehiclesByDealership);
+
 
 // GET /vehicles/:id - Get vehicle by ID, VIN, or stock number
 router.get('/:id', VehicleController.getVehicle);

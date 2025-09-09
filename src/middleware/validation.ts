@@ -72,10 +72,11 @@ export const validateApiKey = (req: Request, res: Response, next: NextFunction):
 export const validateVehicle = [
   // Basic vehicle information
   body('vin')
-    .isLength({ min: 17, max: 17 })
-    .withMessage('VIN must be exactly 17 characters')
-    .matches(/^[A-HJ-NPR-Z0-9]{17}$/)
-    .withMessage('Invalid VIN format'),
+  .optional()
+  .isLength({ min: 17, max: 17 })
+  .withMessage('VIN must be exactly 17 characters')
+  .matches(/^[A-HJ-NPR-Z0-9]{17}$/)
+  .withMessage('Invalid VIN format'),
 
   body('make')
     .notEmpty()
@@ -156,28 +157,7 @@ export const validateVehicle = [
     .isInt({ min: 1 })
     .withMessage('Must seat at least 1 person'),
 
-  // Location validation
-  body('location.dealershipName')
-  .optional()
-  .customSanitizer(() => 'Royal Drive Canada')
-  .custom((val) => val === 'Royal Drive Canada')
-  .withMessage('Only Royal Drive Canada is permitted'),
-
-  body('location.address.street')
-    .notEmpty()
-    .withMessage('Street address is required'),
-
-  body('location.address.city')
-    .notEmpty()
-    .withMessage('City is required'),
-
-  body('location.address.province')
-    .notEmpty()
-    .withMessage('Province is required'),
-
-  body('location.address.postalCode')
-    .matches(/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/)
-    .withMessage('Invalid Canadian postal code format'),
+  // Location removed
 
   // Status validation
   body('status')
