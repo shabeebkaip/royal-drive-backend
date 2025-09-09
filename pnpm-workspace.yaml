@@ -1,0 +1,8 @@
+# Workspace configuration for pnpm
+packages:
+  - '.'
+
+# Optional: Configure pnpm settings
+prefer-workspace-packages: true
+auto-install-peers: true
+strict-peer-dependencies: false
