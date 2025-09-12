@@ -82,3 +82,6 @@ export const createApiResponse = <T>(
   if (error !== undefined) response.error = error;
   return response as ApiResponse<T>;
 };
+
+// Export port utilities
+export { getAvailablePort, findAvailablePort, isPortAvailable } from './portUtils.js';

@@ -8,6 +8,7 @@ import {env, isDevelopment} from './config/env.js';
 import {database} from './config/database.js';
 import {apiRoutes} from './routes/index.js';
 import {errorHandler, notFoundHandler} from './middleware/errorHandler.js';
+import {getAvailablePort} from './utils/portUtils.js';
 
 export class App {
     public app: express.Application;
@@ -108,13 +109,21 @@ export class App {
             // Connect to database
             await database.connect();
 
+            // Find available port
+            const availablePort = await getAvailablePort(env.PORT);
+
             // Start server
-            this.app.listen(env.PORT, () => {
-                console.log(`🚀 Server running on port ${env.PORT}`);
+            this.app.listen(availablePort, () => {
+                console.log(`🚀 Server running on port ${availablePort}`);
                 console.log(`📱 Environment: ${env.NODE_ENV}`);
-                console.log(`🔗 API Base URL: http://localhost:${env.PORT}/api/v1`);
-                console.log(`❤️  Health Check: http://localhost:${env.PORT}/health`);
+                console.log(`🔗 API Base URL: http://localhost:${availablePort}/api/v1`);
+                console.log(`❤️  Health Check: http://localhost:${availablePort}/health`);
                 console.log(`📋 Clean starter pack ready for development!`);
+                
+                // Show port info if different from preferred
+                if (availablePort !== env.PORT) {
+                    console.log(`💡 Preferred port ${env.PORT} was in use, automatically switched to ${availablePort}`);
+                }
             });
 
         } catch (error) {

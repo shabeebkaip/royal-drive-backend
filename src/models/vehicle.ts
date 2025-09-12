@@ -402,10 +402,7 @@ VehicleSchema.pre('save', function(this: IVehicle, next) {
 // Indexes for better performance
 VehicleSchema.index({ make: 1 });
 VehicleSchema.index({ year: 1 });
-VehicleSchema.index({ 'pricing.listPrice': 1 });
 VehicleSchema.index({ 'status.availability': 1 });
-VehicleSchema.index({ 'internal.stockNumber': 1 });
-VehicleSchema.index({ 'marketing.slug': 1 });
 
 // Text search index
 VehicleSchema.index({
