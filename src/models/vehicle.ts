@@ -19,10 +19,9 @@ const VehicleSchema = new Schema<IVehicle>({
     }
   },
   make: {
-    type: String,
-    required: [true, 'Make is required'],
-    trim: true,
-    maxlength: [50, 'Make cannot exceed 50 characters']
+    type: Schema.Types.ObjectId,
+    ref: 'Make',
+    required: [true, 'Make is required']
   },
   model: {
     type: String,
@@ -400,10 +399,39 @@ VehicleSchema.pre('save', function(this: IVehicle, next) {
   next();
 });
 
+// Indexes for better performance
+VehicleSchema.index({ make: 1 });
+VehicleSchema.index({ year: 1 });
+VehicleSchema.index({ 'pricing.listPrice': 1 });
+VehicleSchema.index({ 'status.availability': 1 });
+VehicleSchema.index({ 'internal.stockNumber': 1 });
+VehicleSchema.index({ 'marketing.slug': 1 });
+
+// Text search index
+VehicleSchema.index({
+  model: 'text',
+  'features.exterior': 'text',
+  'features.interior': 'text',
+  'features.safety': 'text',
+  'features.technology': 'text'
+});
+
 // Generate slug from make, model, year, and stock number
-VehicleSchema.pre('save', function(this: IVehicle, next) {
+VehicleSchema.pre('save', async function(this: IVehicle, next) {
   if (!this.marketing.slug || this.isModified('make') || this.isModified('model') || this.isModified('year') || this.isModified('internal.stockNumber')) {
-    const slug = `${this.year}-${this.make}-${this.model}-${this.internal.stockNumber}`
+    // Populate make to get the name for slug generation
+    let makeSlug = 'unknown';
+    if (this.make) {
+      try {
+        const Make = mongoose.model('Make');
+        const makeDoc = await Make.findById(this.make).select('slug name');
+        makeSlug = makeDoc?.slug || makeDoc?.name?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'unknown';
+      } catch (error) {
+        console.warn('Could not populate make for slug generation:', error);
+      }
+    }
+    
+    const slug = `${this.year}-${makeSlug}-${this.model}-${this.internal.stockNumber}`
       .toLowerCase()
       .replace(/[^a-z0-9]/g, '-')
       .replace(/-+/g, '-')

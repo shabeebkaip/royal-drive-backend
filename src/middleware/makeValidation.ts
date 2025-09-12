@@ -15,20 +15,6 @@ export const validateMake = [
     .isLength({ max: 500 })
     .withMessage('Description cannot exceed 500 characters'),
 
-  body('country')
-    .optional()
-    .trim()
-    .isLength({ max: 50 })
-    .withMessage('Country cannot exceed 50 characters')
-    .matches(/^[a-zA-Z\s\-]+$/)
-    .withMessage('Country can only contain letters, spaces, and hyphens'),
-
-  body('website')
-    .optional()
-    .trim()
-    .isURL()
-    .withMessage('Website must be a valid URL'),
-
   body('logo')
     .optional()
     .trim()
@@ -56,20 +42,6 @@ export const validateMakeUpdate = [
     .trim()
     .isLength({ max: 500 })
     .withMessage('Description cannot exceed 500 characters'),
-
-  body('country')
-    .optional()
-    .trim()
-    .isLength({ max: 50 })
-    .withMessage('Country cannot exceed 50 characters')
-    .matches(/^[a-zA-Z\s\-]+$/)
-    .withMessage('Country can only contain letters, spaces, and hyphens'),
-
-  body('website')
-    .optional()
-    .trim()
-    .isURL()
-    .withMessage('Website must be a valid URL'),
 
   body('logo')
     .optional()

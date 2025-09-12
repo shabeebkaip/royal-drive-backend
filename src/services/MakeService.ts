@@ -11,16 +11,11 @@ export class MakeService {
       filter.active = filters.active;
     }
 
-    if (filters.country) {
-      filter.country = new RegExp(filters.country, 'i');
-    }
-
     if (filters.search) {
       const searchRegex = new RegExp(filters.search, 'i');
       filter.$or = [
         { name: searchRegex },
-        { description: searchRegex },
-        { country: searchRegex }
+        { description: searchRegex }
       ];
     }
 

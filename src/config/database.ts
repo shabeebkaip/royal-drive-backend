@@ -15,15 +15,9 @@ class DatabaseConnection {
 
   public async connect(): Promise<void> {
     try {
-      // In serverless environments, check if already connected to avoid connection churn
-      if (mongoose.connection.readyState === 1) {
-        console.log('✅ Database already connected (using existing connection)');
-        return;
-      }
-
       const mongooseOptions = {
-        maxPoolSize: process.env.VERCEL ? 5 : 10, // Smaller pool for serverless
-        serverSelectionTimeoutMS: process.env.VERCEL ? 3000 : 5000, // Faster timeout for serverless
+        maxPoolSize: 10, // Maintain up to 10 socket connections
+        serverSelectionTimeoutMS: 5000, // Try to select a server for up to 5 seconds per attempt
         socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
         bufferCommands: false, // Disable mongoose buffering
         // Recommended for Atlas/MongoDB SRV
@@ -31,7 +25,7 @@ class DatabaseConnection {
         directConnection: false,
       } as const;
 
-      const maxRetries = process.env.VERCEL ? 2 : env.DB_CONNECT_MAX_RETRIES; // Fewer retries for serverless
+      const maxRetries = env.DB_CONNECT_MAX_RETRIES;
       const retryDelay = env.DB_CONNECT_RETRY_MS;
 
       let attempt = 0;
@@ -43,28 +37,24 @@ class DatabaseConnection {
           await mongoose.connect(env.MONGODB_URI, mongooseOptions);
           console.log('🎉 MongoDB connected successfully');
 
-          // Handle connection events (only add listeners once)
-          if (mongoose.connection.listenerCount('error') === 0) {
-            mongoose.connection.on('error', (error) => {
-              console.error('❌ MongoDB connection error:', error);
-            });
+          // Handle connection events
+          mongoose.connection.on('error', (error) => {
+            console.error('❌ MongoDB connection error:', error);
+          });
 
-            mongoose.connection.on('disconnected', () => {
-              console.log('📡 MongoDB disconnected');
-            });
+          mongoose.connection.on('disconnected', () => {
+            console.log('📡 MongoDB disconnected');
+          });
 
-            mongoose.connection.on('reconnected', () => {
-              console.log('🔄 MongoDB reconnected');
-            });
+          mongoose.connection.on('reconnected', () => {
+            console.log('🔄 MongoDB reconnected');
+          });
 
-            // Graceful shutdown (only for non-serverless)
-            if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
-              process.on('SIGINT', async () => {
-                await this.disconnect();
-                process.exit(0);
-              });
-            }
-          }
+          // Graceful shutdown
+          process.on('SIGINT', async () => {
+            await this.disconnect();
+            process.exit(0);
+          });
 
           return; // success
         } catch (err) {
@@ -92,10 +82,6 @@ class DatabaseConnection {
 
     } catch (error) {
       console.error('❌ Failed to connect to MongoDB:', error);
-      // In serverless, throw the error instead of exiting process
-      if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
-        throw error;
-      }
       process.exit(1);
     }
   }

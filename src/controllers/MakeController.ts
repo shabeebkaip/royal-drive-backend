@@ -18,10 +18,6 @@ export class MakeController {
         filters.active = req.query.active === 'true';
       }
 
-      if (req.query.country) {
-        filters.country = req.query.country as string;
-      }
-
       if (req.query.search) {
         filters.search = req.query.search as string;
       }
@@ -138,6 +134,7 @@ export class MakeController {
     } catch (error) {
       let statusCode = 500;
       let message = 'Failed to create make';
+      let details = error instanceof Error ? error.message : 'Unknown error';
 
       if (error instanceof Error) {
         if (error.message.includes('already exists')) {
@@ -146,15 +143,13 @@ export class MakeController {
         } else if (error.message.includes('duplicate key')) {
           statusCode = 409;
           message = 'Make with this name already exists';
+        } else if (/SSL|tls|ENOTFOUND|EAI_AGAIN|ECONNRESET|ECONNREFUSED/i.test(error.message)) {
+          statusCode = 502;
+          message = 'Upstream/network error while processing request';
         }
       }
 
-      const errorResponse = createApiResponse(
-        false,
-        message,
-        undefined,
-        error instanceof Error ? error.message : 'Unknown error'
-      );
+      const errorResponse = createApiResponse(false, message, undefined, details);
       res.status(statusCode).json(errorResponse);
     }
   }
@@ -389,6 +384,36 @@ export class MakeController {
       const errorResponse = createApiResponse(
         false,
         'Failed to retrieve make statistics',
+        undefined,
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+      res.status(500).json(errorResponse);
+    }
+  }
+
+  // GET /makes/dropdown - Get active makes for dropdown selection
+  static async getMakesDropdown(req: Request, res: Response): Promise<void> {
+    try {
+      const makes = await makeService.list({ active: true }, 1, 100);
+
+      const dropdownData = makes.data.map(make => ({
+        _id: make._id,
+        name: make.name,
+        slug: make.slug,
+        logo: make.logo
+      }));
+
+      const response = createApiResponse(
+        true,
+        'Active makes retrieved for dropdown',
+        dropdownData
+      );
+
+      res.status(200).json(response);
+    } catch (error) {
+      const errorResponse = createApiResponse(
+        false,
+        'Failed to retrieve makes for dropdown',
         undefined,
         error instanceof Error ? error.message : 'Unknown error'
       );

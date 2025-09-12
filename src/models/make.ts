@@ -1,6 +1,16 @@
 import mongoose, { Schema } from 'mongoose';
 import { IMake } from '@/types/make';
 
+// Helper function for generating URL-friendly slugs
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special characters except spaces and hyphens
+    .replace(/[\s_-]+/g, '-') // Replace spaces, underscores, and multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, ''); // Remove leading and trailing hyphens
+}
+
 const MakeSchema = new Schema<IMake>({
   name: {
     type: String,
@@ -11,7 +21,6 @@ const MakeSchema = new Schema<IMake>({
   },
   slug: {
     type: String,
-    required: [true, 'Slug is required'],
     unique: true,
     lowercase: true,
     trim: true,
@@ -33,22 +42,6 @@ const MakeSchema = new Schema<IMake>({
     trim: true,
     maxlength: [500, 'Description cannot exceed 500 characters']
   },
-  country: {
-    type: String,
-    trim: true,
-    maxlength: [50, 'Country cannot exceed 50 characters']
-  },
-  website: {
-    type: String,
-    trim: true,
-    validate: {
-      validator: function(v: string) {
-        if (!v) return true; // Optional field
-        return /^https?:\/\/.+/.test(v);
-      },
-      message: 'Website must be a valid URL'
-    }
-  },
   active: {
     type: Boolean,
     default: true
@@ -59,20 +52,13 @@ const MakeSchema = new Schema<IMake>({
 });
 
 // Indexes for better performance
-MakeSchema.index({ name: 1 });
-MakeSchema.index({ slug: 1 });
 MakeSchema.index({ active: 1 });
-MakeSchema.index({ country: 1 });
+MakeSchema.index({ name: 'text', description: 'text' }); // Text search index
 
-// Pre-save middleware to generate slug from name
+// Pre-save middleware to always generate slug from name
 MakeSchema.pre('save', function(this: IMake, next) {
-  if (!this.slug || this.isModified('name')) {
-    this.slug = this.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
-  }
+  // Always generate slug from name (backend responsibility)
+  this.slug = generateSlug(this.name);
   next();
 });
 
@@ -83,6 +69,10 @@ MakeSchema.virtual('vehicleCount', {
   foreignField: 'make',
   count: true
 });
+
+// Ensure virtuals are included when converting to JSON
+MakeSchema.set('toJSON', { virtuals: true });
+MakeSchema.set('toObject', { virtuals: true });
 
 export const Make = mongoose.model<IMake>('Make', MakeSchema);
 export type { IMake };

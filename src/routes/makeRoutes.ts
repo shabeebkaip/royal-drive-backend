@@ -19,6 +19,9 @@ router.get('/popular', MakeController.getPopularMakes);
 // GET /makes/stats - Get make statistics
 router.get('/stats', MakeController.getMakeStats);
 
+// GET /makes/dropdown - Get active makes for dropdown
+router.get('/dropdown', MakeController.getMakesDropdown);
+
 // GET /makes/slug/:slug - Get make by slug
 router.get('/slug/:slug', MakeController.getMakeBySlug);
 

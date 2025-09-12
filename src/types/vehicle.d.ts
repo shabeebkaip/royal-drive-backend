@@ -1,12 +1,12 @@
 // Vehicle type definitions for Royal Drive Backend
 
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 // Vehicle interface for car dealership in Ontario, Toronto
 export interface IVehicle extends Document {
   // Basic Vehicle Information
   vin?: string; // VIN optional per client
-  make: string;
+  make: Types.ObjectId; // Reference to Make model
   model: string;
   year: number;
   trim?: string;
