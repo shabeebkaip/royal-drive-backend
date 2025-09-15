@@ -40,10 +40,10 @@ const VehicleSchema = new Schema<IVehicle>({
     trim: true,
     maxlength: [50, 'Trim cannot exceed 50 characters']
   },
-  bodyType: {
-    type: String,
-    required: [true, 'Body type is required'],
-    enum: ['sedan', 'suv', 'coupe', 'hatchback', 'truck', 'van', 'convertible', 'wagon', 'crossover', 'other']
+  type: {
+    type: Schema.Types.ObjectId,
+    ref: 'VehicleType',
+    required: [true, 'Vehicle type is required']
   },
 
   // Engine & Performance

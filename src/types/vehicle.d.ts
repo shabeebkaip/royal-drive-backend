@@ -10,7 +10,7 @@ export interface IVehicle extends Document {
   model: string;
   year: number;
   trim?: string;
-  bodyType: string; // sedan, SUV, coupe, hatchback, truck, etc.
+  type: Types.ObjectId; // Reference to VehicleType model
 
   // Engine & Performance
   engine: {

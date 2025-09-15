@@ -1,0 +1,122 @@
+{
+  "vehicle_types_requests": {
+    "create_suv": {
+      "method": "POST",
+      "url": "http://localhost:3001/api/v1/vehicle-types",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "name": "SUV",
+        "description": "Sport Utility Vehicle - Perfect for families and outdoor adventures",
+        "icon": "https://example.com/icons/suv.png",
+        "active": true
+      }
+    },
+    "create_sedan": {
+      "method": "POST",
+      "url": "http://localhost:3001/api/v1/vehicle-types",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "name": "Sedan",
+        "description": "Traditional four-door passenger car with separate trunk",
+        "icon": "https://example.com/icons/sedan.png"
+      }
+    },
+    "create_hatchback": {
+      "method": "POST",
+      "url": "http://localhost:3001/api/v1/vehicle-types",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "name": "Hatchback",
+        "description": "Compact car with rear door that swings upward",
+        "icon": "https://example.com/icons/hatchback.png",
+        "active": true
+      }
+    },
+    "create_coupe": {
+      "method": "POST",
+      "url": "http://localhost:3001/api/v1/vehicle-types",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "name": "Coupe",
+        "description": "Two-door car with sporty design",
+        "icon": "https://example.com/icons/coupe.png"
+      }
+    },
+    "create_truck": {
+      "method": "POST",
+      "url": "http://localhost:3001/api/v1/vehicle-types",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "name": "Truck",
+        "description": "Motor vehicle designed for cargo transportation",
+        "icon": "https://example.com/icons/truck.png"
+      }
+    },
+    "update_vehicle_type": {
+      "method": "PUT",
+      "url": "http://localhost:3001/api/v1/vehicle-types/{id}",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "name": "Updated Vehicle Type",
+        "description": "Updated description for the vehicle type",
+        "icon": "https://example.com/icons/updated.png",
+        "active": true
+      }
+    },
+    "update_status": {
+      "method": "PATCH",
+      "url": "http://localhost:3001/api/v1/vehicle-types/{id}/status",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "active": false
+      }
+    }
+  },
+  "quick_copy_bodies": {
+    "basic_create": {
+      "name": "SUV",
+      "description": "Sport Utility Vehicle",
+      "active": true
+    },
+    "with_icon": {
+      "name": "Sedan",
+      "description": "Four-door passenger car",
+      "icon": "https://example.com/sedan.png",
+      "active": true
+    },
+    "minimal": {
+      "name": "Hatchback"
+    },
+    "status_update": {
+      "active": false
+    },
+    "full_update": {
+      "name": "Updated Type Name",
+      "description": "Updated description",
+      "icon": "https://example.com/new-icon.png",
+      "active": true
+    }
+  },
+  "test_endpoints": [
+    "GET http://localhost:3001/api/v1/vehicle-types",
+    "GET http://localhost:3001/api/v1/vehicle-types/dropdown",
+    "GET http://localhost:3001/api/v1/vehicle-types?active=true",
+    "GET http://localhost:3001/api/v1/vehicle-types/search?q=SUV",
+    "GET http://localhost:3001/api/v1/vehicle-types/stats",
+    "GET http://localhost:3001/api/v1/vehicle-types/popular"
+  ]
+}
