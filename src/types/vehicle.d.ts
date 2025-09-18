@@ -7,7 +7,7 @@ export interface IVehicle extends Document {
   // Basic Vehicle Information
   vin?: string; // VIN optional per client
   make: Types.ObjectId; // Reference to Make model
-  model: string;
+  model: Types.ObjectId; // Reference to Model model
   year: number;
   trim?: string;
   type: Types.ObjectId; // Reference to VehicleType model

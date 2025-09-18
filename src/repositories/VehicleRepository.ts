@@ -13,6 +13,7 @@ export class VehicleRepository implements IRepository<IVehicle> {
   async findById(id: string): Promise<IVehicle | null> {
     return Vehicle.findById(id)
       .populate('make', 'name slug logo')
+      .populate('model', 'name slug make vehicleType')
       .populate('type', 'name slug icon')
       .select('-internal.acquisitionCost -internal.notes')
       .exec();
@@ -21,6 +22,7 @@ export class VehicleRepository implements IRepository<IVehicle> {
   async findOne(filter: Partial<IVehicle>): Promise<IVehicle | null> {
     return Vehicle.findOne(filter as FilterQuery<IVehicle>)
       .populate('make', 'name slug logo')
+      .populate('model', 'name slug make vehicleType')
       .populate('type', 'name slug icon')
       .select('-internal.acquisitionCost -internal.notes')
       .exec();
@@ -42,6 +44,7 @@ export class VehicleRepository implements IRepository<IVehicle> {
     const [data, total] = await Promise.all([
       Vehicle.find(filter as FilterQuery<IVehicle>)
         .populate('make', 'name slug logo')
+        .populate('model', 'name slug make vehicleType')
         .populate('type', 'name slug icon')
         .sort(sort)
         .skip(skip)

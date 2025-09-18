@@ -24,10 +24,9 @@ const VehicleSchema = new Schema<IVehicle>({
     required: [true, 'Make is required']
   },
   model: {
-    type: String,
-    required: [true, 'Model is required'],
-    trim: true,
-    maxlength: [50, 'Model cannot exceed 50 characters']
+    type: Schema.Types.ObjectId,
+    ref: 'Model',
+    required: [true, 'Model is required']
   },
   year: {
     type: Number,
