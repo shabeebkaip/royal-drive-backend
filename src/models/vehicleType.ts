@@ -70,8 +70,14 @@ VehicleTypeSchema.virtual('vehicleCount', {
   count: true
 });
 
-// Ensure virtuals are included when converting to JSON
-VehicleTypeSchema.set('toJSON', { virtuals: true });
+// Ensure virtuals are included when converting to JSON and exclude the virtual 'id' field
+VehicleTypeSchema.set('toJSON', { 
+  virtuals: true,
+  transform: function(doc, ret) {
+    delete ret.id;
+    return ret;
+  }
+});
 VehicleTypeSchema.set('toObject', { virtuals: true });
 
 export const VehicleType = mongoose.model<IVehicleType>('VehicleType', VehicleTypeSchema);

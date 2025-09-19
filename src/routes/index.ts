@@ -4,6 +4,7 @@ import { vehicleRoutes } from './vehicleRoutes.js';
 import { makeRoutes } from './makeRoutes.js';
 import { vehicleTypeRoutes } from './vehicleTypeRoutes.js';
 import { modelRoutes } from './modelRoutes.js';
+import fuelTypeRoutes from './fuelTypeRoutes.js';
 import uploadRoutes from './uploadRoutes.js';
 
 const router: Router = express.Router();
@@ -25,6 +26,9 @@ router.use('/vehicle-types', vehicleTypeRoutes);
 
 // Model routes
 router.use('/models', modelRoutes);
+
+// Fuel Type routes
+router.use('/fuel-types', fuelTypeRoutes);
 
 // Upload routes
 router.use('/uploads', uploadRoutes);
