@@ -20,3 +20,7 @@ coverage/
 # Other package managers (exclude their lock files since we use pnpm)
 package-lock.json
 yarn.lock
+
+# Documentation files (exclude README.md which is important)
+*.md
+!README.md
