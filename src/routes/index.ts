@@ -6,6 +6,8 @@ import { vehicleTypeRoutes } from './vehicleTypeRoutes.js';
 import { modelRoutes } from './modelRoutes.js';
 import fuelTypeRoutes from './fuelTypeRoutes.js';
 import transmissionRoutes from './transmissionRoutes.js';
+import { driveTypeRoutes } from './driveTypeRoutes.js';
+import { statusRoutes } from './statusRoutes.js';
 import uploadRoutes from './uploadRoutes.js';
 
 const router: Router = express.Router();
@@ -33,6 +35,12 @@ router.use('/fuel-types', fuelTypeRoutes);
 
 // Transmission routes
 router.use('/transmissions', transmissionRoutes);
+
+// Drive Type routes
+router.use('/drive-types', driveTypeRoutes);
+
+// Status routes
+router.use('/statuses', statusRoutes);
 
 // Upload routes
 router.use('/uploads', uploadRoutes);
