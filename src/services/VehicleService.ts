@@ -1,5 +1,5 @@
-import type { IVehicle, VehicleListFilters } from '@/types/vehicle';
-import { VehicleRepository } from '@/repositories/VehicleRepository.js';
+import type { IVehicle, VehicleListFilters } from '../types/vehicle.d';
+import { VehicleRepository } from '../repositories/VehicleRepository.js';
 
 export class VehicleService {
   constructor(private readonly repo: VehicleRepository) {}
@@ -40,12 +40,22 @@ export class VehicleService {
     return this.repo.findById(id);
   }
 
+  // Internal method that includes acquisition cost and sensitive data
+  async getByIdInternal(id: string) {
+    return this.repo.findByIdInternal(id);
+  }
+
   create(data: Partial<IVehicle>) {
     return this.repo.create(data);
   }
 
   update(id: string, data: Partial<IVehicle>) {
     return this.repo.update(id, data);
+  }
+
+  // Internal update method that returns acquisition cost and sensitive data
+  updateInternal(id: string, data: Partial<IVehicle>) {
+    return this.repo.updateInternal(id, data);
   }
 
   remove(id: string) {

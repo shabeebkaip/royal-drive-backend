@@ -1,8 +1,10 @@
-import { Request, Response } from 'express';
-import type { IVehicle } from '@/types/vehicle';
-import { vehicleService } from '@/services/VehicleService.js';
-import { createApiResponse } from '@/utils/index.js';
+import { Request, Response, NextFunction } from 'express';
+import type { IVehicle, CreateVehicleRequest } from '../types/vehicle.d';
+import type { AuthenticatedRequest } from '../types/user.d';
+import { vehicleService } from '../services/VehicleService.js';
+import { createApiResponse } from '../utils/index.js';
 import { validationResult } from 'express-validator';
+import { canViewInternalData } from '../middleware/auth.js';
 
 export class VehicleController {
   // Get all vehicles with filtering and pagination
@@ -62,13 +64,22 @@ export class VehicleController {
   }
 
   // Get vehicle by ID or VIN
-  static async getVehicle(req: Request, res: Response): Promise<void> {
+  static async getVehicle(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const { id } = req.params;
 
+      // Check if user can view internal data (acquisition cost, etc.)
+      const includeInternal = canViewInternalData(req.user);
+      
       // Try to find by MongoDB ID first, then by VIN, then by stock number
-  let vehicle = await vehicleService.getById(id);
-  if (!vehicle) vehicle = await vehicleService.getByIdOrAlt(id);
+      let vehicle;
+      if (includeInternal) {
+        vehicle = await vehicleService.getByIdInternal(id);
+        if (!vehicle) vehicle = await vehicleService.getByIdOrAlt(id);
+      } else {
+        vehicle = await vehicleService.getById(id);
+        if (!vehicle) vehicle = await vehicleService.getByIdOrAlt(id);
+      }
 
       if (!vehicle) {
         const response = createApiResponse(false, 'Vehicle not found');
@@ -81,20 +92,18 @@ export class VehicleController {
         'Vehicle retrieved successfully',
         vehicle
       );
-
-      res.status(200).json(response);
+      res.json(response);
     } catch (error) {
+      console.error('Error retrieving vehicle:', error);
       const errorResponse = createApiResponse(
         false,
-        'Failed to retrieve vehicle',
-        undefined,
+        'Internal server error',
+        null,
         error instanceof Error ? error.message : 'Unknown error'
       );
       res.status(500).json(errorResponse);
     }
-  }
-
-  // Create new vehicle
+  }  // Create new vehicle
   static async createVehicle(req: Request, res: Response): Promise<void> {
     try {
       const errors = validationResult(req);
@@ -109,7 +118,7 @@ export class VehicleController {
         return;
       }
 
-  const vehicle = await vehicleService.create(req.body as Partial<IVehicle>);
+      const vehicle = await vehicleService.create(req.body);
 
       const response = createApiResponse(
         true,

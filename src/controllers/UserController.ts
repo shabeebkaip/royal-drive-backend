@@ -1,35 +1,105 @@
-import { Request, Response } from 'express';
-import { asyncHandler } from '../middleware/errorHandler.js';
-import { createApiResponse } from '@/utils/index.js';
+import { Response, NextFunction } from 'express';
+import { validationResult } from 'express-validator';
+import { authService } from '../services/AuthService.js';
+import { userService } from '../services/UserService.js';
+import { createApiResponse } from '../utils/index.js';
+import type { AuthenticatedRequest, LoginRequest, CreateUserRequest } from '../types/user.d';
 
-export class HealthController {
-  // Simple health check endpoint
-  getHealth = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const response = createApiResponse(true, 'Server is running perfectly!', {
-      status: 'healthy',
-      uptime: process.uptime(),
-      timestamp: new Date().toISOString(),
-      version: '1.0.0',
-      environment: process.env.NODE_ENV || 'development',
-    });
-    res.json(response);
-  });
+export class UserController {
+  // Login
+  static async login(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        const response = createApiResponse(false, 'Validation failed', null, errors.array()[0].msg);
+        res.status(400).json(response);
+        return;
+      }
 
-  // Simple API info endpoint
-  getInfo = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const response = createApiResponse(true, 'Royal Drive Backend API', {
-      name: 'Royal Drive Backend',
-      version: '1.0.0',
-      description: 'Modern Node.js backend starter pack',
-      endpoints: [
-        'GET /health - Health check',
-        'GET /api/v1/info - API information',
-      ],
-    });
-    res.json(response);
-  });
+      const loginData: LoginRequest = req.body;
+      const result = await authService.login(loginData);
+
+      const response = createApiResponse(true, 'Login successful', result);
+      res.json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Get current user profile
+  static async getProfile(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      if (!req.user) {
+        const response = createApiResponse(false, 'User not authenticated');
+        res.status(401).json(response);
+        return;
+      }
+
+      const response = createApiResponse(true, 'Profile retrieved successfully', req.user);
+      res.json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Get all users (Admin only)
+  static async getAllUsers(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+
+      const result = await userService.list(page, limit);
+      const response = createApiResponse(true, 'Users retrieved successfully', result);
+      res.json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Create new user (Admin only)
+  static async createUser(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        const response = createApiResponse(false, 'Validation failed', null, errors.array()[0].msg);
+        res.status(400).json(response);
+        return;
+      }
+
+      const userData: CreateUserRequest = req.body;
+      const user = await authService.createUser(userData);
+
+      const response = createApiResponse(true, 'User created successfully', user);
+      res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Update user status (Admin only)
+  static async updateUserStatus(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      // Prevent deactivating own account
+      if (req.user?._id?.toString() === id && status !== 'active') {
+        const response = createApiResponse(false, 'Cannot deactivate your own account');
+        res.status(400).json(response);
+        return;
+      }
+
+      const user = await userService.updateStatus(id, status);
+      if (!user) {
+        const response = createApiResponse(false, 'User not found');
+        res.status(404).json(response);
+        return;
+      }
+
+      const response = createApiResponse(true, 'User status updated successfully', user);
+      res.json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
-
-// This file has been removed as part of clean starter pack
-// User functionality is not included in the starter pack
-// Use ExampleController.ts as a template for new controllers

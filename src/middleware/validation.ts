@@ -167,10 +167,8 @@ export const validateVehicle = [
     .isMongoId()
     .withMessage('Status must be a valid ObjectId'),
 
-  // Internal tracking validation
-  body('internal.stockNumber')
-    .notEmpty()
-    .withMessage('Stock number is required'),
+  // Internal tracking validation - stock number is auto-generated, so not required
+  // body('internal.stockNumber') - removed as it's auto-generated
 
   // Marketing validation
   body('marketing.description')

@@ -54,10 +54,6 @@ export interface IVehicle extends Document {
   // Pricing
   pricing: {
     listPrice: number; // CAD
-    msrp?: number; // Manufacturer's Suggested Retail Price
-    dealerCost?: number;
-    tradeInValue?: number;
-    marketValue?: number;
     currency: 'CAD';
     taxes: {
       hst: number; // 13% in Ontario
@@ -196,4 +192,160 @@ export interface VehicleListFilters {
   status?: string; // ObjectId as string
   minPrice?: number;
   maxPrice?: number;
+}
+
+// Vehicle creation interface - stockNumber is auto-generated
+export interface CreateVehicleRequest {
+  // Basic Vehicle Information
+  vin?: string;
+  make: string; // ObjectId as string
+  model: string; // ObjectId as string
+  year: number;
+  trim?: string;
+  type: string; // ObjectId as string
+
+  // Engine & Performance
+  engine: {
+    size: number;
+    cylinders: number;
+    fuelType: string; // ObjectId as string
+    horsepower?: number;
+    torque?: number;
+  };
+
+  // Transmission
+  transmission: {
+    type: string; // ObjectId as string
+    speeds?: number;
+  };
+
+  // Drivetrain
+  drivetrain: string; // ObjectId as string
+
+  // Mileage
+  odometer: {
+    value: number;
+    unit: 'km' | 'miles';
+    isAccurate: boolean;
+  };
+
+  // Condition & History
+  condition: 'new' | 'used' | 'certified-pre-owned';
+  accidentHistory: boolean;
+  numberOfPreviousOwners: number;
+
+  // CarFax Information
+  carfax: {
+    reportUrl?: string;
+    reportId?: string;
+    hasCleanHistory: boolean;
+    lastUpdated?: Date;
+    serviceRecords?: number;
+  };
+
+  // Pricing
+  pricing: {
+    listPrice: number;
+    currency: 'CAD';
+    taxes: {
+      hst: number;
+      licensing: number;
+      other?: number;
+    };
+    financing: {
+      available: boolean;
+      rate?: number;
+      term?: number;
+      monthlyPayment?: number;
+    };
+  };
+
+  // Features & Options
+  features: {
+    exterior: string[];
+    interior: string[];
+    safety: string[];
+    technology: string[];
+    convenience: string[];
+  };
+
+  // Physical Specifications
+  specifications: {
+    exteriorColor: string;
+    interiorColor: string;
+    doors: number;
+    seatingCapacity: number;
+    fuelTankCapacity?: number;
+    fuelEconomy: {
+      city?: number;
+      highway?: number;
+      combined?: number;
+    };
+    dimensions: {
+      length?: number;
+      width?: number;
+      height?: number;
+      wheelbase?: number;
+      weight?: number;
+    };
+  };
+
+  // Status
+  status: string; // ObjectId as string
+  availability: {
+    inStock: boolean;
+    estimatedArrival?: Date;
+  };
+
+  // Media
+  media: {
+    images: string[];
+    videos?: string[];
+    documents?: string[];
+  };
+
+  // Ontario Specific
+  ontario: {
+    emissionTest: {
+      required: boolean;
+      passed?: boolean;
+      expiryDate?: Date;
+    };
+    safetyStandard: {
+      passed: boolean;
+      certificationDate?: Date;
+      expiryDate?: Date;
+      inspector?: string;
+    };
+    uvip: {
+      required: boolean;
+      obtained?: boolean;
+      cost: number;
+    };
+  };
+
+  // Internal Tracking - stockNumber is auto-generated, acquisitionDate defaults to now
+  internal: {
+    stockNumber?: string; // Optional - auto-generated if not provided
+    acquisitionDate?: Date; // Optional - defaults to now
+    acquisitionCost?: number;
+    lastServiceDate?: Date;
+    nextServiceDue?: Date;
+    assignedSalesperson?: string;
+    notes?: string;
+  };
+
+  // SEO & Marketing
+  marketing: {
+    featured?: boolean;
+    specialOffer?: string;
+    keywords?: string[];
+    description: string;
+    slug?: string; // Auto-generated
+  };
+}
+
+// Vehicle update interface - everything optional except where business logic requires
+export interface UpdateVehicleRequest extends Partial<CreateVehicleRequest> {
+  // Most fields are optional for updates
 }

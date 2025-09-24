@@ -9,6 +9,7 @@ import transmissionRoutes from './transmissionRoutes.js';
 import { driveTypeRoutes } from './driveTypeRoutes.js';
 import { statusRoutes } from './statusRoutes.js';
 import uploadRoutes from './uploadRoutes.js';
+import { authRoutes } from './authRoutes.js';
 
 const router: Router = express.Router();
 
@@ -17,6 +18,9 @@ router.get('/health', ExampleController.getHealth);
 
 // API info route
 router.get('/info', ExampleController.getInfo);
+
+// Authentication routes
+router.use('/auth', authRoutes);
 
 // Vehicle routes
 router.use('/vehicles', vehicleRoutes);

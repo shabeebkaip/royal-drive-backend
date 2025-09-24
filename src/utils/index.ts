@@ -1,6 +1,9 @@
 import jwt from 'jsonwebtoken';
-import { env } from '@/config/env';
-import '@/types/index.d';
+import { env } from '../config/env.js';
+import '../types/index.d';
+
+// Stock number generation utilities
+export * from './generateStockNumber.js';
 
 // Basic JWT utilities for future use
 export class JwtUtils {
@@ -41,6 +44,12 @@ export class AppError extends Error {
 }
 
 export class ValidationError extends AppError {
+  constructor(message: string) {
+    super(message, 400);
+  }
+}
+
+export class BadRequestError extends AppError {
   constructor(message: string) {
     super(message, 400);
   }
