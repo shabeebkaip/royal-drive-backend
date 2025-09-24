@@ -31,9 +31,6 @@ router.get('/default', StatusController.getDefaultStatus);
 // GET /statuses/slug/:slug - Get status by slug
 router.get('/slug/:slug', StatusController.getStatusBySlug);
 
-// GET /statuses/code/:code - Get status by code
-router.get('/code/:code', StatusController.getStatusByCode);
-
 // GET /statuses/:id - Get status by ID
 router.get('/:id', StatusController.getStatus);
 

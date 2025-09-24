@@ -58,9 +58,9 @@ const VehicleSchema = new Schema<IVehicle>({
       min: [1, 'Must have at least 1 cylinder']
     },
     fuelType: {
-      type: String,
-      required: [true, 'Fuel type is required'],
-      enum: ['gasoline', 'diesel', 'hybrid', 'electric', 'plug-in-hybrid']
+      type: Schema.Types.ObjectId,
+      ref: 'FuelType',
+      required: [true, 'Fuel type is required']
     },
     horsepower: Number,
     torque: Number
@@ -69,18 +69,18 @@ const VehicleSchema = new Schema<IVehicle>({
   // Transmission
   transmission: {
     type: {
-      type: String,
-      required: [true, 'Transmission type is required'],
-      enum: ['manual', 'automatic', 'cvt']
+      type: Schema.Types.ObjectId,
+      ref: 'Transmission',
+      required: [true, 'Transmission type is required']
     },
     speeds: Number
   },
 
   // Drivetrain
   drivetrain: {
-    type: String,
-    required: [true, 'Drivetrain is required'],
-    enum: ['fwd', 'rwd', 'awd', '4wd']
+    type: Schema.Types.ObjectId,
+    ref: 'DriveType',
+    required: [true, 'Drivetrain is required']
   },
 
   // Mileage
@@ -225,10 +225,9 @@ const VehicleSchema = new Schema<IVehicle>({
 
   // Status
   status: {
-    type: String,
-    required: [true, 'Status is required'],
-    enum: ['available', 'sold', 'pending', 'reserved', 'on-hold'],
-    default: 'available'
+    type: Schema.Types.ObjectId,
+    ref: 'Status',
+    required: [true, 'Status is required']
   },
   availability: {
     inStock: {
@@ -258,27 +257,6 @@ const VehicleSchema = new Schema<IVehicle>({
     documents: [String]
   },
 
-  // Warranty
-  warranty: {
-    manufacturer: {
-      hasWarranty: {
-        type: Boolean,
-        default: false
-      },
-      expiryDate: Date,
-      kilometersRemaining: Number,
-      type: String
-    },
-    extended: {
-      available: {
-        type: Boolean,
-        default: false
-      },
-      provider: String,
-      cost: Number,
-      duration: Number
-    }
-  },
 
   // Ontario Specific
   ontario: {
@@ -357,7 +335,6 @@ const VehicleSchema = new Schema<IVehicle>({
     },
     slug: {
       type: String,
-      required: [true, 'URL slug is required'],
       unique: true,
       trim: true,
       lowercase: true
@@ -375,8 +352,10 @@ VehicleSchema.index({ make: 1, model: 1, year: 1 });
 VehicleSchema.index({ status: 1 });
 VehicleSchema.index({ 'pricing.listPrice': 1 });
 VehicleSchema.index({ condition: 1 });
-VehicleSchema.index({ bodyType: 1 });
 VehicleSchema.index({ 'engine.fuelType': 1 });
+VehicleSchema.index({ 'transmission.type': 1 });
+VehicleSchema.index({ drivetrain: 1 });
+VehicleSchema.index({ type: 1 });
 VehicleSchema.index({ createdAt: -1 });
 
 // Virtual for calculating days in inventory
@@ -398,14 +377,9 @@ VehicleSchema.pre('save', function(this: IVehicle, next) {
   next();
 });
 
-// Indexes for better performance
-VehicleSchema.index({ make: 1 });
-VehicleSchema.index({ year: 1 });
-VehicleSchema.index({ 'status.availability': 1 });
-
 // Text search index
 VehicleSchema.index({
-  model: 'text',
+  'marketing.description': 'text',
   'features.exterior': 'text',
   'features.interior': 'text',
   'features.safety': 'text',
@@ -414,6 +388,7 @@ VehicleSchema.index({
 
 // Generate slug from make, model, year, and stock number
 VehicleSchema.pre('save', async function(this: IVehicle, next) {
+  // Always generate slug if it doesn't exist or if related fields changed
   if (!this.marketing.slug || this.isModified('make') || this.isModified('model') || this.isModified('year') || this.isModified('internal.stockNumber')) {
     // Populate make to get the name for slug generation
     let makeSlug = 'unknown';
@@ -424,10 +399,24 @@ VehicleSchema.pre('save', async function(this: IVehicle, next) {
         makeSlug = makeDoc?.slug || makeDoc?.name?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'unknown';
       } catch (error) {
         console.warn('Could not populate make for slug generation:', error);
+        makeSlug = String(this.make).slice(-6); // fallback to last 6 chars of ObjectId
+      }
+    }
+
+    // Populate model to get the name for slug generation
+    let modelSlug = 'unknown';
+    if (this.model) {
+      try {
+        const Model = mongoose.model('Model');
+        const modelDoc = await Model.findById(this.model).select('slug name');
+        modelSlug = modelDoc?.slug || modelDoc?.name?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'unknown';
+      } catch (error) {
+        console.warn('Could not populate model for slug generation:', error);
+        modelSlug = String(this.model).slice(-6); // fallback to last 6 chars of ObjectId
       }
     }
     
-    const slug = `${this.year}-${makeSlug}-${this.model}-${this.internal.stockNumber}`
+    const slug = `${this.year}-${makeSlug}-${modelSlug}-${this.internal.stockNumber}`
       .toLowerCase()
       .replace(/[^a-z0-9]/g, '-')
       .replace(/-+/g, '-')

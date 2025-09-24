@@ -81,22 +81,24 @@ export const validateVehicle = [
   body('make')
     .notEmpty()
     .withMessage('Make is required')
-    .isLength({ max: 50 })
-    .withMessage('Make cannot exceed 50 characters'),
+    .isMongoId()
+    .withMessage('Make must be a valid ObjectId'),
 
   body('model')
     .notEmpty()
     .withMessage('Model is required')
-    .isLength({ max: 50 })
-    .withMessage('Model cannot exceed 50 characters'),
+    .isMongoId()
+    .withMessage('Model must be a valid ObjectId'),
 
   body('year')
     .isInt({ min: 1900, max: new Date().getFullYear() + 2 })
     .withMessage('Year must be between 1900 and 2 years in the future'),
 
-  body('bodyType')
-    .isIn(['sedan', 'suv', 'coupe', 'hatchback', 'truck', 'van', 'convertible', 'wagon', 'crossover', 'other'])
-    .withMessage('Invalid body type'),
+  body('type')
+    .notEmpty()
+    .withMessage('Vehicle type is required')
+    .isMongoId()
+    .withMessage('Vehicle type must be a valid ObjectId'),
 
   // Engine validation
   body('engine.size')
@@ -108,18 +110,18 @@ export const validateVehicle = [
     .withMessage('Must have at least 1 cylinder'),
 
   body('engine.fuelType')
-    .isIn(['gasoline', 'diesel', 'hybrid', 'electric', 'plug-in-hybrid'])
-    .withMessage('Invalid fuel type'),
+    .isMongoId()
+    .withMessage('Engine fuel type must be a valid ObjectId'),
 
   // Transmission validation
   body('transmission.type')
-    .isIn(['manual', 'automatic', 'cvt'])
-    .withMessage('Invalid transmission type'),
+    .isMongoId()
+    .withMessage('Transmission type must be a valid ObjectId'),
 
   // Drivetrain validation
   body('drivetrain')
-    .isIn(['fwd', 'rwd', 'awd', '4wd'])
-    .withMessage('Invalid drivetrain'),
+    .isMongoId()
+    .withMessage('Drivetrain must be a valid ObjectId'),
 
   // Odometer validation
   body('odometer.value')
@@ -133,7 +135,7 @@ export const validateVehicle = [
   // Condition validation
   body('condition')
     .isIn(['new', 'used', 'certified-pre-owned'])
-    .withMessage('Invalid condition'),
+    .withMessage('Condition must be one of: new, used, certified-pre-owned'),
 
   // Pricing validation
   body('pricing.listPrice')
@@ -162,8 +164,8 @@ export const validateVehicle = [
   // Status validation
   body('status')
     .optional()
-    .isIn(['available', 'sold', 'pending', 'reserved', 'on-hold'])
-    .withMessage('Invalid status'),
+    .isMongoId()
+    .withMessage('Status must be a valid ObjectId'),
 
   // Internal tracking validation
   body('internal.stockNumber')
@@ -203,23 +205,23 @@ export const validateVehicleUpdate = [
 
   body('make')
     .optional()
-    .isLength({ max: 50 })
-    .withMessage('Make cannot exceed 50 characters'),
+    .isMongoId()
+    .withMessage('Make must be a valid ObjectId'),
 
   body('model')
     .optional()
-    .isLength({ max: 50 })
-    .withMessage('Model cannot exceed 50 characters'),
+    .isMongoId()
+    .withMessage('Model must be a valid ObjectId'),
 
   body('year')
     .optional()
     .isInt({ min: 1900, max: new Date().getFullYear() + 2 })
     .withMessage('Year must be between 1900 and 2 years in the future'),
 
-  body('bodyType')
+  body('type')
     .optional()
-    .isIn(['sedan', 'suv', 'coupe', 'hatchback', 'truck', 'van', 'convertible', 'wagon', 'crossover', 'other'])
-    .withMessage('Invalid body type'),
+    .isMongoId()
+    .withMessage('Vehicle type must be a valid ObjectId'),
 
   // Engine validation (optional)
   body('engine.size')
@@ -234,8 +236,26 @@ export const validateVehicleUpdate = [
 
   body('engine.fuelType')
     .optional()
-    .isIn(['gasoline', 'diesel', 'hybrid', 'electric', 'plug-in-hybrid'])
-    .withMessage('Invalid fuel type'),
+    .isMongoId()
+    .withMessage('Engine fuel type must be a valid ObjectId'),
+
+  // Transmission validation (optional)
+  body('transmission.type')
+    .optional()
+    .isMongoId()
+    .withMessage('Transmission type must be a valid ObjectId'),
+
+  // Drivetrain validation (optional)
+  body('drivetrain')
+    .optional()
+    .isMongoId()
+    .withMessage('Drivetrain must be a valid ObjectId'),
+
+  // Condition validation (optional)
+  body('condition')
+    .optional()
+    .isIn(['new', 'used', 'certified-pre-owned'])
+    .withMessage('Condition must be one of: new, used, certified-pre-owned'),
 
   // Pricing validation (optional)
   body('pricing.listPrice')
@@ -246,8 +266,8 @@ export const validateVehicleUpdate = [
   // Status validation (optional)
   body('status')
     .optional()
-    .isIn(['available', 'sold', 'pending', 'reserved', 'on-hold'])
-    .withMessage('Invalid status'),
+    .isMongoId()
+    .withMessage('Status must be a valid ObjectId'),
 
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);

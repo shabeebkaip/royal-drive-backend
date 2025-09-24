@@ -18,9 +18,7 @@ export class DriveTypeRepository {
     
     if (search) {
       query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { code: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } }
+        { name: { $regex: search, $options: 'i' } }
       ];
     }
     
@@ -67,11 +65,6 @@ export class DriveTypeRepository {
     return DriveType.findOne({ slug }).populate('vehicleCount').lean();
   }
 
-  // Get drive type by code
-  async findByCode(code: string): Promise<IDriveType | null> {
-    return DriveType.findOne({ code: code.toUpperCase() }).populate('vehicleCount').lean();
-  }
-
   // Create new drive type
   async create(driveTypeData: Partial<IDriveType>): Promise<IDriveType> {
     const driveType = new DriveType(driveTypeData);
@@ -106,27 +99,11 @@ export class DriveTypeRepository {
     return count > 0;
   }
 
-  // Check if drive type exists by code
-  async existsByCode(code: string, excludeId?: string): Promise<boolean> {
-    const query: any = { 
-      code: code.toUpperCase()
-    };
-    
-    if (excludeId) {
-      query._id = { $ne: excludeId };
-    }
-    
-    const count = await DriveType.countDocuments(query);
-    return count > 0;
-  }
-
   // Search drive types
   async search(query: string, options: PaginationOptions = { page: 1, limit: 10 }): Promise<PaginatedResult<IDriveType>> {
     const searchQuery = {
       $or: [
-        { name: { $regex: query, $options: 'i' } },
-        { code: { $regex: query, $options: 'i' } },
-        { description: { $regex: query, $options: 'i' } }
+        { name: { $regex: query, $options: 'i' } }
       ]
     };
 
@@ -185,9 +162,9 @@ export class DriveTypeRepository {
   }
 
   // Get active drive types for dropdown (simple format)
-  async findActiveSimple(): Promise<Pick<IDriveType, '_id' | 'name' | 'code' | 'slug'>[]> {
+  async findActiveSimple(): Promise<Pick<IDriveType, '_id' | 'name' | 'slug'>[]> {
     return DriveType.find({ active: true })
-      .select('_id name code slug')
+      .select('_id name slug')
       .sort({ name: 1 })
       .lean();
   }
@@ -206,7 +183,7 @@ export class DriveTypeRepository {
         {
           $lookup: {
             from: 'vehicles',
-            localField: 'code',
+            localField: '_id',
             foreignField: 'drivetrain',
             as: 'vehicles'
           }

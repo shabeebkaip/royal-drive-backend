@@ -4,9 +4,7 @@ import { Document } from 'mongoose';
 
 export interface IDriveType extends Document {
   name: string; // e.g., Front-Wheel Drive, Rear-Wheel Drive, All-Wheel Drive, 4-Wheel Drive
-  code: string; // e.g., FWD, RWD, AWD, 4WD
   slug: string; // e.g., front-wheel-drive, rear-wheel-drive, all-wheel-drive, 4-wheel-drive
-  description?: string; // Optional description of the drive type
   active: boolean; // Whether drive type is active (default: true)
   createdAt: Date;
   updatedAt: Date;
@@ -17,7 +15,7 @@ export interface IDriveType extends Document {
 export interface DriveTypeListFilters {
   search?: string;
   active?: boolean;
-  sortBy?: 'name' | 'code' | 'createdAt' | 'updatedAt';
+  sortBy?: 'name' | 'createdAt' | 'updatedAt';
   sortOrder?: 'asc' | 'desc';
   page?: number;
   limit?: number;
@@ -26,15 +24,11 @@ export interface DriveTypeListFilters {
 // Request interfaces
 export interface CreateDriveTypeRequest {
   name: string;
-  code: string;
-  description?: string;
   active?: boolean;
 }
 
 export interface UpdateDriveTypeRequest {
   name?: string;
-  code?: string;
-  description?: string;
   active?: boolean;
 }
 

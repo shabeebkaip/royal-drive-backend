@@ -56,15 +56,17 @@ export class App {
         // Compression
         this.app.use(compression());
 
-        // Rate limiting
-        const limiter = rateLimit({
-            windowMs: 15 * 60 * 1000, // 15 minutes
-            max: 100, // limit each IP to 100 requests per windowMs
-            message: {
-                error: 'Too many requests from this IP, please try again later.'
-            }
-        });
-        this.app.use('/api/', limiter);
+        // Rate limiting (disabled in development)
+        if (!isDevelopment) {
+            const limiter = rateLimit({
+                windowMs: env.RATE_LIMIT_WINDOW_MS, // from environment (default: 15 min)
+                max: env.RATE_LIMIT_MAX_REQUESTS, // from environment (default: 100)
+                message: {
+                    error: 'Too many requests from this IP, please try again later.'
+                }
+            });
+            this.app.use('/api/', limiter);
+        }
 
         // Logging (only in development)
         if (isDevelopment) {

@@ -12,7 +12,6 @@ export const seedStatuses = async () => {
     const statuses = [
       {
         name: 'Available',
-        code: 'available',
         description: 'Vehicle is available for sale and can be purchased immediately',
         color: '#28a745',
         icon: '✅',
@@ -21,7 +20,6 @@ export const seedStatuses = async () => {
       },
       {
         name: 'Sold',
-        code: 'sold',
         description: 'Vehicle has been sold and is no longer available',
         color: '#dc3545',
         icon: '🚗',
@@ -30,7 +28,6 @@ export const seedStatuses = async () => {
       },
       {
         name: 'Pending',
-        code: 'pending',
         description: 'Vehicle sale is pending completion of paperwork or financing',
         color: '#ffc107',
         icon: '⏳',
@@ -39,7 +36,6 @@ export const seedStatuses = async () => {
       },
       {
         name: 'Reserved',
-        code: 'reserved',
         description: 'Vehicle is reserved for a specific customer but not yet sold',
         color: '#fd7e14',
         icon: '🔒',
@@ -48,7 +44,6 @@ export const seedStatuses = async () => {
       },
       {
         name: 'On Hold',
-        code: 'on-hold',
         description: 'Vehicle is temporarily not available for sale',
         color: '#6c757d',
         icon: '⏸️',
@@ -62,7 +57,7 @@ export const seedStatuses = async () => {
     
     // Log the created statuses
     createdStatuses.forEach(status => {
-      console.log(`   - ${status.name} (${status.code} - ${status.slug}) ${status.isDefault ? '[DEFAULT]' : ''}`);
+      console.log(`   - ${status.name} (${status.slug}) ${status.isDefault ? '[DEFAULT]' : ''}`);
     });
 
   } catch (error) {

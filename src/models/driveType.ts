@@ -18,31 +18,12 @@ const driveTypeSchema = new Schema<IDriveType>({
     maxlength: [50, 'Drive type name cannot exceed 50 characters'],
     unique: true
   },
-  code: {
-    type: String,
-    required: [true, 'Drive type code is required'],
-    trim: true,
-    uppercase: true,
-    maxlength: [10, 'Drive type code cannot exceed 10 characters'],
-    unique: true,
-    validate: {
-      validator: function(v: string) {
-        return /^[A-Z0-9]+$/.test(v);
-      },
-      message: 'Code must contain only uppercase letters and numbers'
-    }
-  },
   slug: {
     type: String,
     unique: true,
     lowercase: true,
     trim: true,
     maxlength: [60, 'Slug cannot exceed 60 characters']
-  },
-  description: {
-    type: String,
-    trim: true,
-    maxlength: [300, 'Description cannot exceed 300 characters']
   },
   active: {
     type: Boolean,
@@ -67,7 +48,7 @@ driveTypeSchema.index({ createdAt: -1 });
 // Virtual field to count vehicles using this drive type
 driveTypeSchema.virtual('vehicleCount', {
   ref: 'Vehicle',
-  localField: 'code',
+  localField: '_id',
   foreignField: 'drivetrain',
   count: true
 });

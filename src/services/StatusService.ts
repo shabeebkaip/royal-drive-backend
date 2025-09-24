@@ -43,19 +43,6 @@ export class StatusService {
     }
   }
 
-  // Get status by code
-  async getStatusByCode(code: string): Promise<IStatus> {
-    try {
-      const status = await this.statusRepository.findByCode(code);
-      if (!status) {
-        throw new Error('Status not found');
-      }
-      return status;
-    } catch (error) {
-      throw new Error(`Failed to retrieve status: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  }
-
   // Get default status
   async getDefaultStatus(): Promise<IStatus> {
     try {
@@ -78,12 +65,6 @@ export class StatusService {
         throw new Error('Status with this name already exists');
       }
 
-      // Check if status with same code exists
-      const codeExists = await this.statusRepository.existsByCode(statusData.code);
-      if (codeExists) {
-        throw new Error('Status with this code already exists');
-      }
-
       return await this.statusRepository.create(statusData);
     } catch (error) {
       throw new Error(`Failed to create status: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -104,14 +85,6 @@ export class StatusService {
         const nameExists = await this.statusRepository.existsByName(statusData.name, id);
         if (nameExists) {
           throw new Error('Status with this name already exists');
-        }
-      }
-
-      // Check if code is being updated and if it conflicts
-      if (statusData.code && statusData.code !== existingStatus.code) {
-        const codeExists = await this.statusRepository.existsByCode(statusData.code, id);
-        if (codeExists) {
-          throw new Error('Status with this code already exists');
         }
       }
 

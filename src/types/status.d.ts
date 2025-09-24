@@ -4,7 +4,6 @@ import { Document } from 'mongoose';
 
 export interface IStatus extends Document {
   name: string; // e.g., Available, Sold, Pending, Reserved, On Hold
-  code: string; // e.g., available, sold, pending, reserved, on-hold
   slug: string; // e.g., available, sold, pending, reserved, on-hold
   description?: string; // Optional description of the status
   color?: string; // Optional color code for UI display (e.g., #28a745 for available)
@@ -21,7 +20,7 @@ export interface StatusListFilters {
   search?: string;
   active?: boolean;
   isDefault?: boolean;
-  sortBy?: 'name' | 'code' | 'createdAt' | 'updatedAt';
+  sortBy?: 'name' | 'createdAt' | 'updatedAt';
   sortOrder?: 'asc' | 'desc';
   page?: number;
   limit?: number;
@@ -30,7 +29,6 @@ export interface StatusListFilters {
 // Request interfaces
 export interface CreateStatusRequest {
   name: string;
-  code: string;
   description?: string;
   color?: string;
   icon?: string;
@@ -40,7 +38,6 @@ export interface CreateStatusRequest {
 
 export interface UpdateStatusRequest {
   name?: string;
-  code?: string;
   description?: string;
   color?: string;
   icon?: string;
@@ -73,7 +70,7 @@ export interface StatusStatsResponse {
   inactive: number;
   defaultStatus?: {
     name: string;
-    code: string;
+    slug: string;
   };
   mostUsed?: {
     name: string;
@@ -84,7 +81,6 @@ export interface StatusStatsResponse {
 export interface StatusDropdownResponse {
   _id: string;
   name: string;
-  code: string;
   slug: string;
   color?: string;
   icon?: string;

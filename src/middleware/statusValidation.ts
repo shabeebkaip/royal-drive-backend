@@ -12,15 +12,6 @@ export const validateStatus = [
     .trim()
     .escape(),
   
-  body('code')
-    .notEmpty()
-    .withMessage('Status code is required')
-    .isLength({ min: 1, max: 30 })
-    .withMessage('Status code must be between 1 and 30 characters')
-    .matches(/^[a-z0-9-]+$/)
-    .withMessage('Code must contain only lowercase letters, numbers, and hyphens')
-    .trim(),
-  
   body('description')
     .optional()
     .isLength({ max: 300 })
@@ -58,14 +49,6 @@ export const validateStatusUpdate = [
     .withMessage('Status name must be between 1 and 50 characters')
     .trim()
     .escape(),
-  
-  body('code')
-    .optional()
-    .isLength({ min: 1, max: 30 })
-    .withMessage('Status code must be between 1 and 30 characters')
-    .matches(/^[a-z0-9-]+$/)
-    .withMessage('Code must contain only lowercase letters, numbers, and hyphens')
-    .trim(),
   
   body('description')
     .optional()

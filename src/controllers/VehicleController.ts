@@ -19,8 +19,9 @@ export class VehicleController {
       if (req.query.model) filter.model = new RegExp(req.query.model as string, 'i');
       if (req.query.year) filter.year = parseInt(req.query.year as string);
       if (req.query.condition) filter.condition = req.query.condition;
-      if (req.query.bodyType) filter.bodyType = req.query.bodyType;
       if (req.query.fuelType) filter['engine.fuelType'] = req.query.fuelType;
+      if (req.query.transmission) filter['transmission.type'] = req.query.transmission;
+      if (req.query.drivetrain) filter.drivetrain = req.query.drivetrain;
       if (req.query.status) filter.status = req.query.status;
 
       // Price range filtering

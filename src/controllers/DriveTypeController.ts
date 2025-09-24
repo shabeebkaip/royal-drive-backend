@@ -11,7 +11,7 @@ export class DriveTypeController {
     try {
       const filters: DriveTypeListFilters = {
         search: req.query.search as string,
-        sortBy: (req.query.sortBy as 'name' | 'code' | 'createdAt' | 'updatedAt') || 'name',
+        sortBy: (req.query.sortBy as 'name' | 'createdAt' | 'updatedAt') || 'name',
         sortOrder: (req.query.sortOrder as 'asc' | 'desc') || 'asc',
         page: parseInt(req.query.page as string) || 1,
         limit: parseInt(req.query.limit as string) || 10
@@ -167,31 +167,6 @@ export class DriveTypeController {
     try {
       const { slug } = req.params;
       const driveType = await driveTypeService.getDriveTypeBySlug(slug);
-
-      const response = createApiResponse(
-        true,
-        'Drive type retrieved successfully',
-        driveType
-      );
-
-      res.status(200).json(response);
-    } catch (error) {
-      const statusCode = error instanceof Error && error.message.includes('not found') ? 404 : 500;
-      const errorResponse = createApiResponse(
-        false,
-        'Failed to retrieve drive type',
-        undefined,
-        error instanceof Error ? error.message : 'Unknown error'
-      );
-      res.status(statusCode).json(errorResponse);
-    }
-  }
-
-  // GET /drive-types/code/:code - Get drive type by code
-  static async getDriveTypeByCode(req: Request, res: Response): Promise<void> {
-    try {
-      const { code } = req.params;
-      const driveType = await driveTypeService.getDriveTypeByCode(code);
 
       const response = createApiResponse(
         true,

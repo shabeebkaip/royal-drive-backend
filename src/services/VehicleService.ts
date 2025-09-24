@@ -11,8 +11,9 @@ export class VehicleService {
   if (filters.model) filter.model = new RegExp(filters.model, 'i');
     if (filters.year) filter.year = filters.year;
     if (filters.condition) filter.condition = filters.condition;
-    if (filters.bodyType) filter.bodyType = filters.bodyType;
     if (filters.fuelType) filter['engine.fuelType'] = filters.fuelType;
+    if (filters.transmission) filter['transmission.type'] = filters.transmission;
+    if (filters.drivetrain) filter.drivetrain = filters.drivetrain;
     if (filters.status) filter.status = filters.status;
 
     if (filters.minPrice || filters.maxPrice) {

@@ -10,15 +10,6 @@ function generateSlug(name: string): string {
     .trim();
 }
 
-// Helper function for generating URL-friendly codes
-function generateCode(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .trim();
-}
-
 const statusSchema = new Schema<IStatus>({
   name: {
     type: String,
@@ -26,20 +17,6 @@ const statusSchema = new Schema<IStatus>({
     trim: true,
     maxlength: [50, 'Status name cannot exceed 50 characters'],
     unique: true
-  },
-  code: {
-    type: String,
-    required: [true, 'Status code is required'],
-    trim: true,
-    lowercase: true,
-    maxlength: [30, 'Status code cannot exceed 30 characters'],
-    unique: true,
-    validate: {
-      validator: function(v: string) {
-        return /^[a-z0-9-]+$/.test(v);
-      },
-      message: 'Code must contain only lowercase letters, numbers, and hyphens'
-    }
   },
   slug: {
     type: String,
@@ -81,13 +58,10 @@ const statusSchema = new Schema<IStatus>({
   timestamps: true
 });
 
-// Pre-save middleware to generate slug and code
+// Pre-save middleware to generate slug
 statusSchema.pre('save', function(next) {
   if (this.isModified('name') || this.isNew) {
     this.slug = generateSlug(this.name);
-    if (!this.code) {
-      this.code = generateCode(this.name);
-    }
   }
   next();
 });
@@ -112,7 +86,7 @@ statusSchema.index({ createdAt: -1 });
 // Virtual field to count vehicles using this status
 statusSchema.virtual('vehicleCount', {
   ref: 'Vehicle',
-  localField: 'code',
+  localField: '_id',
   foreignField: 'status',
   count: true
 });

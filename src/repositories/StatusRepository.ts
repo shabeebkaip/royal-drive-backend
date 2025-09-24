@@ -20,7 +20,6 @@ export class StatusRepository {
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: 'i' } },
-        { code: { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } }
       ];
     }
@@ -72,11 +71,6 @@ export class StatusRepository {
     return Status.findOne({ slug }).populate('vehicleCount').lean();
   }
 
-  // Get status by code
-  async findByCode(code: string): Promise<IStatus | null> {
-    return Status.findOne({ code: code.toLowerCase() }).populate('vehicleCount').lean();
-  }
-
   // Get default status
   async findDefault(): Promise<IStatus | null> {
     return Status.findOne({ isDefault: true, active: true }).lean();
@@ -116,26 +110,11 @@ export class StatusRepository {
     return count > 0;
   }
 
-  // Check if status exists by code
-  async existsByCode(code: string, excludeId?: string): Promise<boolean> {
-    const query: any = { 
-      code: code.toLowerCase()
-    };
-    
-    if (excludeId) {
-      query._id = { $ne: excludeId };
-    }
-    
-    const count = await Status.countDocuments(query);
-    return count > 0;
-  }
-
   // Search statuses
   async search(query: string, options: PaginationOptions = { page: 1, limit: 10 }) {
     const searchQuery = {
       $or: [
         { name: { $regex: query, $options: 'i' } },
-        { code: { $regex: query, $options: 'i' } },
         { description: { $regex: query, $options: 'i' } }
       ]
     };
@@ -195,9 +174,9 @@ export class StatusRepository {
   }
 
   // Get active statuses for dropdown (simple format)
-  async findActiveSimple(): Promise<Pick<IStatus, '_id' | 'name' | 'code' | 'slug' | 'color' | 'icon'>[]> {
+  async findActiveSimple(): Promise<Pick<IStatus, '_id' | 'name' | 'slug' | 'color' | 'icon'>[]> {
     return Status.find({ active: true })
-      .select('_id name code slug color icon')
+      .select('_id name slug color icon')
       .sort({ name: 1 })
       .lean();
   }
@@ -207,18 +186,18 @@ export class StatusRepository {
     total: number;
     active: number;
     inactive: number;
-    defaultStatus?: { name: string; code: string };
+    defaultStatus?: { name: string };
     mostUsed?: { name: string; vehicleCount: number };
   }> {
     const [total, active, defaultStatus, statusesWithCounts] = await Promise.all([
       Status.countDocuments(),
       Status.countDocuments({ active: true }),
-      Status.findOne({ isDefault: true }).select('name code').lean(),
+      Status.findOne({ isDefault: true }).select('name').lean(),
       Status.aggregate([
         {
           $lookup: {
             from: 'vehicles',
-            localField: 'code',
+            localField: '_id',
             foreignField: 'status',
             as: 'vehicles'
           }
@@ -250,7 +229,7 @@ export class StatusRepository {
       total: number;
       active: number;
       inactive: number;
-      defaultStatus?: { name: string; code: string };
+      defaultStatus?: { name: string };
       mostUsed?: { name: string; vehicleCount: number };
     } = {
       total,
@@ -259,7 +238,7 @@ export class StatusRepository {
     };
 
     if (defaultStatus) {
-      result.defaultStatus = { name: defaultStatus.name, code: defaultStatus.code };
+      result.defaultStatus = { name: defaultStatus.name };
     }
 
     if (mostUsed) {

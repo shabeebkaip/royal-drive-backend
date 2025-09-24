@@ -43,19 +43,6 @@ export class DriveTypeService {
     }
   }
 
-  // Get drive type by code
-  async getDriveTypeByCode(code: string): Promise<IDriveType> {
-    try {
-      const driveType = await this.driveTypeRepository.findByCode(code);
-      if (!driveType) {
-        throw new Error('Drive type not found');
-      }
-      return driveType;
-    } catch (error) {
-      throw new Error(`Failed to retrieve drive type: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  }
-
   // Create new drive type
   async createDriveType(driveTypeData: CreateDriveTypeRequest): Promise<IDriveType> {
     try {
@@ -63,12 +50,6 @@ export class DriveTypeService {
       const nameExists = await this.driveTypeRepository.existsByName(driveTypeData.name);
       if (nameExists) {
         throw new Error('Drive type with this name already exists');
-      }
-
-      // Check if drive type with same code exists
-      const codeExists = await this.driveTypeRepository.existsByCode(driveTypeData.code);
-      if (codeExists) {
-        throw new Error('Drive type with this code already exists');
       }
 
       return await this.driveTypeRepository.create(driveTypeData);
@@ -91,14 +72,6 @@ export class DriveTypeService {
         const nameExists = await this.driveTypeRepository.existsByName(driveTypeData.name, id);
         if (nameExists) {
           throw new Error('Drive type with this name already exists');
-        }
-      }
-
-      // Check if code is being updated and if it conflicts
-      if (driveTypeData.code && driveTypeData.code !== existingDriveType.code) {
-        const codeExists = await this.driveTypeRepository.existsByCode(driveTypeData.code, id);
-        if (codeExists) {
-          throw new Error('Drive type with this code already exists');
         }
       }
 

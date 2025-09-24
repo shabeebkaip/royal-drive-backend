@@ -28,9 +28,6 @@ router.get('/dropdown', DriveTypeController.getDriveTypesDropdown);
 // GET /drive-types/slug/:slug - Get drive type by slug
 router.get('/slug/:slug', DriveTypeController.getDriveTypeBySlug);
 
-// GET /drive-types/code/:code - Get drive type by code
-router.get('/code/:code', DriveTypeController.getDriveTypeByCode);
-
 // GET /drive-types/:id - Get drive type by ID
 router.get('/:id', DriveTypeController.getDriveType);
 

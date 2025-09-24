@@ -11,7 +11,7 @@ export class StatusController {
     try {
       const filters: StatusListFilters = {
         search: req.query.search as string,
-        sortBy: (req.query.sortBy as 'name' | 'code' | 'createdAt' | 'updatedAt') || 'name',
+        sortBy: (req.query.sortBy as 'name' | 'createdAt' | 'updatedAt') || 'name',
         sortOrder: (req.query.sortOrder as 'asc' | 'desc') || 'asc',
         page: parseInt(req.query.page as string) || 1,
         limit: parseInt(req.query.limit as string) || 10
@@ -195,31 +195,6 @@ export class StatusController {
     try {
       const { slug } = req.params;
       const status = await statusService.getStatusBySlug(slug);
-
-      const response = createApiResponse(
-        true,
-        'Status retrieved successfully',
-        status
-      );
-
-      res.status(200).json(response);
-    } catch (error) {
-      const statusCode = error instanceof Error && error.message.includes('not found') ? 404 : 500;
-      const errorResponse = createApiResponse(
-        false,
-        'Failed to retrieve status',
-        undefined,
-        error instanceof Error ? error.message : 'Unknown error'
-      );
-      res.status(statusCode).json(errorResponse);
-    }
-  }
-
-  // GET /statuses/code/:code - Get status by code
-  static async getStatusByCode(req: Request, res: Response): Promise<void> {
-    try {
-      const { code } = req.params;
-      const status = await statusService.getStatusByCode(code);
 
       const response = createApiResponse(
         true,

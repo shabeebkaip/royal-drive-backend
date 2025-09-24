@@ -16,19 +16,19 @@ export interface IVehicle extends Document {
   engine: {
     size: number; // in liters
     cylinders: number;
-    fuelType: 'gasoline' | 'diesel' | 'hybrid' | 'electric' | 'plug-in-hybrid';
+    fuelType: Types.ObjectId; // Reference to FuelType model
     horsepower?: number;
     torque?: number;
   };
 
   // Transmission
   transmission: {
-    type: 'manual' | 'automatic' | 'cvt';
+    type: Types.ObjectId; // Reference to Transmission model
     speeds?: number;
   };
 
   // Drivetrain
-  drivetrain: 'fwd' | 'rwd' | 'awd' | '4wd';
+  drivetrain: Types.ObjectId; // Reference to DriveType model
 
   // Mileage
   odometer: {
@@ -105,7 +105,7 @@ export interface IVehicle extends Document {
   // Availability (location removed)
 
   // Status
-  status: 'available' | 'sold' | 'pending' | 'reserved' | 'on-hold';
+  status: Types.ObjectId; // Reference to Status model
   availability: {
     inStock: boolean;
     estimatedArrival?: Date;
@@ -190,9 +190,10 @@ export interface VehicleListFilters {
   minYear?: number;
   maxYear?: number;
   condition?: IVehicle['condition'];
-  bodyType?: IVehicle['bodyType'];
-  fuelType?: IVehicle['engine']['fuelType'];
-  status?: IVehicle['status'];
+  fuelType?: string; // ObjectId as string
+  transmission?: string; // ObjectId as string  
+  drivetrain?: string; // ObjectId as string
+  status?: string; // ObjectId as string
   minPrice?: number;
   maxPrice?: number;
 }

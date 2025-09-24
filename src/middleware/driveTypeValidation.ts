@@ -12,22 +12,6 @@ export const validateDriveType = [
     .trim()
     .escape(),
   
-  body('code')
-    .notEmpty()
-    .withMessage('Drive type code is required')
-    .isLength({ min: 1, max: 10 })
-    .withMessage('Drive type code must be between 1 and 10 characters')
-    .matches(/^[A-Z0-9]+$/)
-    .withMessage('Code must contain only uppercase letters and numbers')
-    .trim(),
-  
-  body('description')
-    .optional()
-    .isLength({ max: 300 })
-    .withMessage('Description cannot exceed 300 characters')
-    .trim()
-    .escape(),
-  
   body('active')
     .optional()
     .isBoolean()
@@ -40,21 +24,6 @@ export const validateDriveTypeUpdate = [
     .optional()
     .isLength({ min: 1, max: 50 })
     .withMessage('Drive type name must be between 1 and 50 characters')
-    .trim()
-    .escape(),
-  
-  body('code')
-    .optional()
-    .isLength({ min: 1, max: 10 })
-    .withMessage('Drive type code must be between 1 and 10 characters')
-    .matches(/^[A-Z0-9]+$/)
-    .withMessage('Code must contain only uppercase letters and numbers')
-    .trim(),
-  
-  body('description')
-    .optional()
-    .isLength({ max: 300 })
-    .withMessage('Description cannot exceed 300 characters')
     .trim()
     .escape(),
   
