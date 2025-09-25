@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
-import '../types/index.d';
+import '@/types/index.js';
 
 // Stock number generation utilities
 export * from './generateStockNumber.js';
