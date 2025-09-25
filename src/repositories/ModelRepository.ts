@@ -1,7 +1,7 @@
 import { FilterQuery } from 'mongoose';
-import '@/types/index.d';
-import { Model } from '@/models/model.js';
-import type { IModel, ModelListFilters } from '@/types/model';
+import '../types/index.d.js';
+import { Model } from '../models/model.js';
+import type { IModel, ModelListFilters } from '../types/model.js';
 
 export class ModelRepository implements IRepository<IModel> {
   async create(data: Partial<IModel>): Promise<IModel> {
@@ -10,17 +10,125 @@ export class ModelRepository implements IRepository<IModel> {
   }
 
   async findById(id: string): Promise<IModel | null> {
-    return Model.findById(id)
-      .populate('make', 'name slug logo')
-      .populate('vehicleType', 'name slug icon')
-      .exec();
+    const { ObjectId } = require('mongoose').Types;
+    
+    const pipeline: any[] = [
+      { $match: { _id: new ObjectId(id) } },
+      // Lookup to populate make
+      {
+        $lookup: {
+          from: 'makes',
+          localField: 'make',
+          foreignField: '_id',
+          as: 'make'
+        }
+      },
+      {
+        $unwind: {
+          path: '$make',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      // Lookup to populate vehicleType
+      {
+        $lookup: {
+          from: 'vehicletypes',
+          localField: 'vehicleType',
+          foreignField: '_id',
+          as: 'vehicleType'
+        }
+      },
+      {
+        $unwind: {
+          path: '$vehicleType',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      // Lookup to count vehicles for this model
+      {
+        $lookup: {
+          from: 'vehicles',
+          localField: '_id',
+          foreignField: 'model',
+          as: 'vehicles'
+        }
+      },
+      // Add vehicleCount field
+      {
+        $addFields: {
+          vehicleCount: { $size: '$vehicles' }
+        }
+      },
+      // Remove the vehicles array to clean up response
+      {
+        $project: {
+          vehicles: 0
+        }
+      }
+    ];
+
+    const result = await Model.aggregate(pipeline).exec();
+    return result.length > 0 ? result[0] : null;
   }
 
   async findOne(filter: Partial<IModel>): Promise<IModel | null> {
-    return Model.findOne(filter as FilterQuery<IModel>)
-      .populate('make', 'name slug logo')
-      .populate('vehicleType', 'name slug icon')
-      .exec();
+    const pipeline: any[] = [
+      { $match: filter },
+      // Lookup to populate make
+      {
+        $lookup: {
+          from: 'makes',
+          localField: 'make',
+          foreignField: '_id',
+          as: 'make'
+        }
+      },
+      {
+        $unwind: {
+          path: '$make',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      // Lookup to populate vehicleType
+      {
+        $lookup: {
+          from: 'vehicletypes',
+          localField: 'vehicleType',
+          foreignField: '_id',
+          as: 'vehicleType'
+        }
+      },
+      {
+        $unwind: {
+          path: '$vehicleType',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      // Lookup to count vehicles for this model
+      {
+        $lookup: {
+          from: 'vehicles',
+          localField: '_id',
+          foreignField: 'model',
+          as: 'vehicles'
+        }
+      },
+      // Add vehicleCount field
+      {
+        $addFields: {
+          vehicleCount: { $size: '$vehicles' }
+        }
+      },
+      // Remove the vehicles array to clean up response
+      {
+        $project: {
+          vehicles: 0
+        }
+      }
+    ];
+
+    const result = await Model.aggregate(pipeline).exec();
+    return result.length > 0 ? result[0] : null;
   }
 
   async findMany(
@@ -31,22 +139,88 @@ export class ModelRepository implements IRepository<IModel> {
     const limit = Math.max(1, Math.min(100, options.limit ?? 10));
     const skip = (page - 1) * limit;
 
-    const sort: Record<string, 1 | -1> = {};
     const sortBy = options.sortBy ?? 'name';
     const sortOrder = options.sortOrder === 'asc' ? 1 : -1;
-    sort[sortBy] = sortOrder;
 
-    const [data, total] = await Promise.all([
-      Model.find(filter as FilterQuery<IModel>)
-        .populate('make', 'name slug logo')
-        .populate('vehicleType', 'name slug icon')
-        .sort(sort)
-        .skip(skip)
-        .limit(limit)
-        .exec(),
-      Model.countDocuments(filter as FilterQuery<IModel>).exec(),
-    ]);
+    // Build match stage for filtering
+    const matchStage: any = { ...filter };
 
+    // Aggregation pipeline to include vehicle count
+    const pipeline: any[] = [
+      { $match: matchStage },
+      // Lookup to populate make
+      {
+        $lookup: {
+          from: 'makes',
+          localField: 'make',
+          foreignField: '_id',
+          as: 'make'
+        }
+      },
+      {
+        $unwind: {
+          path: '$make',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      // Lookup to populate vehicleType
+      {
+        $lookup: {
+          from: 'vehicletypes',
+          localField: 'vehicleType',
+          foreignField: '_id',
+          as: 'vehicleType'
+        }
+      },
+      {
+        $unwind: {
+          path: '$vehicleType',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      // Lookup to count vehicles for this model
+      {
+        $lookup: {
+          from: 'vehicles',
+          localField: '_id',
+          foreignField: 'model',
+          as: 'vehicles'
+        }
+      },
+      // Add vehicleCount field
+      {
+        $addFields: {
+          vehicleCount: { $size: '$vehicles' }
+        }
+      },
+      // Remove the vehicles array to clean up response
+      {
+        $project: {
+          vehicles: 0
+        }
+      },
+      // Sort
+      { 
+        $sort: { [sortBy]: sortOrder } 
+      },
+      // Facet for pagination and total count
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: limit }
+          ],
+          totalCount: [
+            { $count: 'count' }
+          ]
+        }
+      }
+    ];
+
+    const [result] = await Model.aggregate(pipeline).exec();
+    
+    const data = result.data || [];
+    const total = result.totalCount[0]?.count || 0;
     const pages = Math.ceil(total / limit) || 1;
 
     return {
