@@ -1,7 +1,6 @@
 import { FilterQuery } from 'mongoose';
-import '@/types/index.d';
-import { Make } from '@/models/make.js';
-import type { IMake, MakeListFilters } from '@/types/make';
+import { Make } from '../models/make';
+import type { IMake } from '../types/make';
 
 export class MakeRepository implements IRepository<IMake> {
   async create(data: Partial<IMake>): Promise<IMake> {

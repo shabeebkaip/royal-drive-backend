@@ -1,4 +1,4 @@
-import { VehicleType } from '@/models/vehicleType.js';
+import { VehicleType } from '../models/vehicleType';
 
 export const seedVehicleTypes = async () => {
   try {

@@ -1,9 +1,9 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 import crypto from 'crypto';
-import { UserRepository } from '../repositories/UserRepository.js';
+import { UserRepository } from '../repositories/UserRepository';
 import type { IUser, LoginRequest, LoginResponse, CreateUserRequest } from '../types/user.d';
-import { UnauthorizedError, BadRequestError } from '../utils/index.js';
-import { env } from '../config/env.js';
+import { UnauthorizedError, BadRequestError } from '../utils/index';
+import { env } from '../config/env';
 
 export class AuthService {
   constructor(private readonly userRepo: UserRepository) {}

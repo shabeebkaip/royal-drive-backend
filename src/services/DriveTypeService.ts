@@ -1,5 +1,5 @@
 import { DriveTypeRepository } from '@/repositories/DriveTypeRepository';
-import { IDriveType, DriveTypeListFilters, CreateDriveTypeRequest, UpdateDriveTypeRequest, UpdateDriveTypeStatusRequest } from '@/types/driveType';
+import { IDriveType, DriveTypeListFilters, CreateDriveTypeRequest, UpdateDriveTypeRequest, UpdateDriveTypeStatusRequest } from '../types/driveType';
 
 export class DriveTypeService {
   private driveTypeRepository: DriveTypeRepository;

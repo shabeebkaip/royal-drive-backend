@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { StatusService } from '@/services/StatusService';
+import { StatusService } from '../services/StatusService';
 import { createApiResponse } from '@/utils';
-import { StatusListFilters, CreateStatusRequest, UpdateStatusRequest, UpdateStatusStatusRequest } from '@/types/status';
+import { StatusListFilters, CreateStatusRequest, UpdateStatusRequest, UpdateStatusStatusRequest } from '../types/status';
 
 const statusService = new StatusService();
 

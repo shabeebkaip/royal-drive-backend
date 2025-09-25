@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import { database } from '@/config/database.js';
-import { User } from '@/models/User.js';
-import { env } from '@/config/env.js';
+import { database } from './database';
+import { User } from '../models/User';
+import { env } from './env';
 
 async function createSuperAdmin() {
   try {

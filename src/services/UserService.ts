@@ -1,6 +1,6 @@
 import type { IUser, CreateUserRequest } from '../types/user.d';
-import { UserRepository } from '../repositories/UserRepository.js';
-import { BadRequestError } from '../utils/index.js';
+import { UserRepository } from '../repositories/UserRepository';
+import { BadRequestError } from '../utils/index';
 
 export class UserService {
   constructor(private readonly repo: UserRepository) {}

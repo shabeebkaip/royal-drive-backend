@@ -1,5 +1,5 @@
-import type { IMake, MakeListFilters } from '@/types/make';
-import { MakeRepository } from '@/repositories/MakeRepository.js';
+import type { IMake, MakeListFilters } from '../types/make';
+import { MakeRepository } from '@/repositories/MakeRepository';
 
 export class MakeService {
   constructor(private readonly repo: MakeRepository) {}

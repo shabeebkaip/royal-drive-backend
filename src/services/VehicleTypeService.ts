@@ -1,5 +1,5 @@
-import type { IVehicleType, VehicleTypeListFilters } from '@/types/vehicleType';
-import { VehicleTypeRepository } from '@/repositories/VehicleTypeRepository.js';
+import type { IVehicleType, VehicleTypeListFilters } from '../types/vehicleType';
+import { VehicleTypeRepository } from '@/repositories/VehicleTypeRepository';
 
 export class VehicleTypeService {
   constructor(private readonly repo: VehicleTypeRepository) {}

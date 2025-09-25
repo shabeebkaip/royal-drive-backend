@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import type { IVehicle, CreateVehicleRequest } from '../types/vehicle.d';
 import type { AuthenticatedRequest } from '../types/user.d';
-import { vehicleService } from '../services/VehicleService.js';
-import { createApiResponse } from '../utils/index.js';
+import { vehicleService } from '../services/VehicleService';
+import { createApiResponse } from '../utils/index';
 import { validationResult } from 'express-validator';
-import { canViewInternalData } from '../middleware/auth.js';
+import { canViewInternalData } from '../middleware/auth';
 
 export class VehicleController {
   // Get all vehicles with filtering and pagination

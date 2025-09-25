@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IMake } from '@/types/make';
+import { IMake } from '../types/make';
 
 // Helper function for generating URL-friendly slugs
 function generateSlug(name: string): string {

@@ -1,7 +1,6 @@
 import { FilterQuery } from 'mongoose';
-import '../types/index.d.js';
-import { Model } from '../models/model.js';
-import type { IModel, ModelListFilters } from '../types/model.js';
+import { Model } from '../models/model';
+import type { IModel, ModelListFilters } from '../types/model';
 
 export class ModelRepository implements IRepository<IModel> {
   async create(data: Partial<IModel>): Promise<IModel> {

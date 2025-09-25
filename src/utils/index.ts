@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken';
-import { env } from '../config/env.js';
-import '@/types/index.js';
+import { env } from '../config/env';
 
 // Stock number generation utilities
-export * from './generateStockNumber.js';
+export * from './generateStockNumber';
 
 // Basic JWT utilities for future use
 export class JwtUtils {
@@ -93,4 +92,4 @@ export const createApiResponse = <T>(
 };
 
 // Export port utilities
-export { getAvailablePort, findAvailablePort, isPortAvailable } from './portUtils.js';
+export { getAvailablePort, findAvailablePort, isPortAvailable } from './portUtils';

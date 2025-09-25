@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import type { IModel } from '@/types/model';
-import { modelService } from '@/services/ModelService.js';
-import { createApiResponse } from '@/utils/index.js';
+import type { IModel } from '../types/model';
+import { modelService } from '../services/ModelService';
+import { createApiResponse } from '@/utils/index';
 import { validationResult } from 'express-validator';
 
 export class ModelController {

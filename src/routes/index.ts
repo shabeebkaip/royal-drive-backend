@@ -1,15 +1,15 @@
 import express, { Router } from 'express';
-import { ExampleController } from '../controllers/ExampleController.js';
-import { vehicleRoutes } from './vehicleRoutes.js';
-import { makeRoutes } from './makeRoutes.js';
-import { vehicleTypeRoutes } from './vehicleTypeRoutes.js';
-import { modelRoutes } from './modelRoutes.js';
-import fuelTypeRoutes from './fuelTypeRoutes.js';
-import transmissionRoutes from './transmissionRoutes.js';
-import { driveTypeRoutes } from './driveTypeRoutes.js';
-import { statusRoutes } from './statusRoutes.js';
-import uploadRoutes from './uploadRoutes.js';
-import { authRoutes } from './authRoutes.js';
+import { ExampleController } from '../controllers/ExampleController';
+import { vehicleRoutes } from './vehicleRoutes';
+import { makeRoutes } from './makeRoutes';
+import { vehicleTypeRoutes } from './vehicleTypeRoutes';
+import { modelRoutes } from './modelRoutes';
+import fuelTypeRoutes from './fuelTypeRoutes';
+import transmissionRoutes from './transmissionRoutes';
+import { driveTypeRoutes } from './driveTypeRoutes';
+import { statusRoutes } from './statusRoutes';
+import uploadRoutes from './uploadRoutes';
+import { authRoutes } from './authRoutes';
 
 const router: Router = express.Router();
 

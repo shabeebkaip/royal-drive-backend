@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
-import { env } from '@/config/env.js';
+import { env } from './env';
 
 // Configure Cloudinary either via CLOUDINARY_URL or discrete vars
 if (process.env.CLOUDINARY_URL) {

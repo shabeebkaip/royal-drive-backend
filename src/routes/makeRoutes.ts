@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
-import { MakeController } from '../controllers/MakeController.js';
-import { validateMake, validateMakeUpdate } from '../middleware/makeValidation.js';
+import { MakeController } from '../controllers/MakeController';
+import { validateMake, validateMakeUpdate } from '../middleware/makeValidation';
 
 const router: Router = express.Router();
 

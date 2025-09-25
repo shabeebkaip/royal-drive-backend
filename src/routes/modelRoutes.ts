@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
-import { ModelController } from '../controllers/ModelController.js';
-import { validateModel, validateModelUpdate } from '../middleware/modelValidation.js';
+import { ModelController } from '../controllers/ModelController';
+import { validateModel, validateModelUpdate } from '../middleware/modelValidation';
 
 const router: Router = express.Router();
 

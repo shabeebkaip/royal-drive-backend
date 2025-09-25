@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
-import { VehicleTypeController } from '../controllers/VehicleTypeController.js';
-import { validateVehicleType, validateVehicleTypeUpdate } from '../middleware/vehicleTypeValidation.js';
+import { VehicleTypeController } from '../controllers/VehicleTypeController';
+import { validateVehicleType, validateVehicleTypeUpdate } from '../middleware/vehicleTypeValidation';
 
 const router: Router = express.Router();
 

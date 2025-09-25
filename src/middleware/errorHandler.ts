@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../utils/index.js';
-import { env, isDevelopment } from '../config/env.js';
+import { AppError } from '../utils/index';
+import { env, isDevelopment } from '../config/env';
 import { ZodError } from 'zod';
 import { ValidationError } from 'express-validator';
 

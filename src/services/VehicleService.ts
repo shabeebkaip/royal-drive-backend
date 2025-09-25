@@ -1,5 +1,5 @@
 import type { IVehicle, VehicleListFilters } from '../types/vehicle.d';
-import { VehicleRepository } from '../repositories/VehicleRepository.js';
+import { VehicleRepository } from '../repositories/VehicleRepository';
 
 export class VehicleService {
   constructor(private readonly repo: VehicleRepository) {}

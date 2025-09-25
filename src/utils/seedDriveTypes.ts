@@ -1,4 +1,4 @@
-import DriveType from '@/models/driveType';
+import DriveType from '../models/driveType';
 
 export const seedDriveTypes = async () => {
   try {

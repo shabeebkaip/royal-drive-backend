@@ -1,5 +1,5 @@
 import type { UploadApiOptions, UploadApiResponse } from 'cloudinary';
-import { cloudinary } from '@/config/cloudinary.js';
+import { cloudinary } from '../config/cloudinary';
 import streamifier from 'streamifier';
 
 export type UploadResult = {

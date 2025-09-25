@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IModel } from '@/types/model';
+import { IModel } from '../types/model';
 
 // Helper function for generating URL-friendly slugs
 function generateSlug(name: string): string {

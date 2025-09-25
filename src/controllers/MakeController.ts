@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import type { IMake } from '@/types/make';
-import { makeService } from '@/services/MakeService.js';
-import { createApiResponse } from '@/utils/index.js';
+import type { IMake } from '../types/make';
+import { makeService } from '../services/MakeService';
+import { createApiResponse } from '@/utils/index';
 import { validationResult } from 'express-validator';
 
 export class MakeController {

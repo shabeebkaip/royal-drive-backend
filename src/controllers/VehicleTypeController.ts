@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import type { IVehicleType } from '@/types/vehicleType';
-import { vehicleTypeService } from '@/services/VehicleTypeService.js';
-import { createApiResponse } from '@/utils/index.js';
+import type { IVehicleType } from '../types/vehicleType';
+import { vehicleTypeService } from '../services/VehicleTypeService';
+import { createApiResponse } from '@/utils/index';
 import { validationResult } from 'express-validator';
 
 export class VehicleTypeController {

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { FuelTypeService } from '@/services/FuelTypeService.js';
-import { FuelTypeListFilters } from '@/types/fuelType';
+import { FuelTypeService } from '../services/FuelTypeService';
+import { FuelTypeListFilters } from '../types/fuelType';
 
 export class FuelTypeController {
   private fuelTypeService: FuelTypeService;

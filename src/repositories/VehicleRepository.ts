@@ -1,6 +1,5 @@
 import { FilterQuery, MongooseError, SortOrder } from 'mongoose';
-import '../types/index.d';
-import { Vehicle } from '../models/vehicle.js';
+import { Vehicle } from '../models/vehicle';
 import type { IVehicle } from '../types/vehicle.d';
 
 

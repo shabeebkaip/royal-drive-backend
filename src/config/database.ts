@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { env } from './env.js';
+import { env } from './env';
 
 class DatabaseConnection {
   private static instance: DatabaseConnection;

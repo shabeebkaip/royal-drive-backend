@@ -1,5 +1,5 @@
 import { StatusRepository } from '@/repositories/StatusRepository';
-import { IStatus, StatusListFilters, CreateStatusRequest, UpdateStatusRequest, UpdateStatusStatusRequest } from '@/types/status';
+import { IStatus, StatusListFilters, CreateStatusRequest, UpdateStatusRequest, UpdateStatusStatusRequest } from '../types/status';
 
 export class StatusService {
   private statusRepository: StatusRepository;

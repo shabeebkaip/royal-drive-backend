@@ -4,11 +4,11 @@ import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import morgan from 'morgan';
-import {env, isDevelopment} from './config/env.js';
-import {database} from './config/database.js';
-import {apiRoutes} from './routes/index.js';
-import {errorHandler, notFoundHandler} from './middleware/errorHandler.js';
-import {getAvailablePort} from './utils/portUtils.js';
+import {env, isDevelopment} from './config/env';
+import {database} from './config/database';
+import {apiRoutes} from './routes/index';
+import {errorHandler, notFoundHandler} from './middleware/errorHandler';
+import {getAvailablePort} from './utils/portUtils';
 
 export class App {
     public app: express.Application;

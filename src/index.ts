@@ -1,4 +1,4 @@
-import App from './app.js';
+import App from './app';
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason: unknown, promise: Promise<any>) => {

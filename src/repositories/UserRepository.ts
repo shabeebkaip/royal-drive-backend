@@ -1,7 +1,6 @@
 import { FilterQuery } from 'mongoose';
-import { User } from '../models/User.js';
+import { User } from '../models/User';
 import type { IUser } from '../types/user.d';
-import '../types/index.d';
 
 export class UserRepository implements IRepository<IUser> {
   async create(data: Partial<IUser>): Promise<IUser> {
