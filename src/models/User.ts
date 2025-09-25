@@ -110,8 +110,7 @@ const userSchema = new Schema<IUser>({
   }
 });
 
-// Indexes
-userSchema.index({ email: 1 });
+// Indexes (email already has unique: true, so no need for separate index)
 userSchema.index({ role: 1 });
 userSchema.index({ status: 1 });
 userSchema.index({ createdAt: -1 });

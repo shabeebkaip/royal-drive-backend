@@ -25,9 +25,7 @@ const fuelTypeSchema = new Schema<IFuelType>({
   versionKey: false
 });
 
-// Create index for performance
-fuelTypeSchema.index({ name: 1 });
-fuelTypeSchema.index({ slug: 1 });
+// Create index for performance (name and slug already have unique: true)
 fuelTypeSchema.index({ active: 1 });
 
 // Virtual field for vehicle count

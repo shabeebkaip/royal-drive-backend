@@ -25,8 +25,8 @@ const transmissionSchema = new Schema<ITransmission>({
 });
 
 // Create index for better performance
-transmissionSchema.index({ name: 1 });
-transmissionSchema.index({ slug: 1 });
+// Note: slug already has unique: true, so no separate index needed
+// Note: name has unique compound index below, so no separate basic index needed
 transmissionSchema.index({ active: 1 });
 transmissionSchema.index({ name: 'text' });
 
