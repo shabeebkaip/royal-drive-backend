@@ -38,6 +38,7 @@
     "morgan": "^1.10.0",
     "multer": "^2.0.2",
     "streamifier": "^0.1.1",
+    "tsconfig-paths": "^4.2.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
