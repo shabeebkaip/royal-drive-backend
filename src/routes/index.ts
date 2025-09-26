@@ -10,6 +10,7 @@ import { driveTypeRoutes } from './driveTypeRoutes';
 import { statusRoutes } from './statusRoutes';
 import uploadRoutes from './uploadRoutes';
 import { authRoutes } from './authRoutes';
+import vehicleEnquiryRoutes from './vehicleEnquiryRoutes';
 
 const router: Router = express.Router();
 
@@ -48,6 +49,9 @@ router.use('/statuses', statusRoutes);
 
 // Upload routes
 router.use('/uploads', uploadRoutes);
+
+// Vehicle Enquiry routes
+router.use('/enquiries', vehicleEnquiryRoutes);
 
 // Export the router
 export { router as apiRoutes };
