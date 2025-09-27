@@ -11,7 +11,7 @@ const envSchema = z.object({
   MONGODB_URI: z.string().url(),
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters long for security'),
   JWT_EXPIRES_IN: z.string().default('7d'),
-  ALLOWED_ORIGINS: z.string().default('http://localhost:3000,http://localhost:5174,http://localhost:5175,https://*.vercel.app,https://royal-drive-admin-gules.vercel.app'),
+  ALLOWED_ORIGINS: z.string().default('http://localhost:3000,http://localhost:5174,http://localhost:5175,https://*.vercel.app,https://royal-drive-admin-gules.vercel.app,https://royaldrivecanada.com,https://*.royaldrivecanada.com'),
   RATE_LIMIT_WINDOW_MS: z.string().transform(Number).default('900000'),
   RATE_LIMIT_MAX_REQUESTS: z.string().transform(Number).default('100'),
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug']).default('info'),
