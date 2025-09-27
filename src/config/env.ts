@@ -24,6 +24,9 @@ const envSchema = z.object({
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
   CLOUDINARY_API_SECRET: z.string().optional(),
+  // Redis (optional for caching analytics)
+  REDIS_URL: z.string().optional(),
+  REDIS_TTL_SECONDS: z.string().transform(Number).default('300'),
 });
 
 // Validate and export environment variables

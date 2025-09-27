@@ -1,0 +1,125 @@
+import { FilterQuery } from 'mongoose';
+import { SalesTransaction } from '../models/SalesTransaction';
+import { ISalesTransaction, ISalesCreateRequest, ISalesSummaryRow } from '../types/sales.d';
+
+interface ListParams {
+  status?: string;
+  salesperson?: string;
+  vehicle?: string;
+  from?: Date;
+  to?: Date;
+  search?: string;
+  limit?: number;
+  page?: number;
+}
+
+export const salesTransactionService = {
+  async create(payload: ISalesCreateRequest): Promise<ISalesTransaction> {
+    const doc = new SalesTransaction(payload as any);
+    return doc.save();
+  },
+
+  async getById(id: string) {
+    return SalesTransaction.findById(id)
+      .populate({
+        path: 'vehicle',
+        populate: [
+          { path: 'make', select: 'name slug' },
+          { path: 'model', select: 'name slug' },
+          { path: 'type', select: 'name' },
+          { path: 'engine.fuelType', select: 'name' },
+          { path: 'transmission.type', select: 'name' },
+          { path: 'drivetrain', select: 'name' },
+          { path: 'status', select: 'name' }
+        ]
+      })
+      .populate('salesperson', 'name email role');
+  },
+
+  async list(params: ListParams) {
+    const filter: FilterQuery<ISalesTransaction> = {};
+    if (params.status) filter.status = params.status as any;
+    if (params.salesperson) filter.salesperson = params.salesperson as any;
+    if (params.vehicle) filter.vehicle = params.vehicle as any;
+    if (params.from || params.to) {
+      filter.createdAt = {} as any;
+      if (params.from) (filter.createdAt as any).$gte = params.from;
+      if (params.to) (filter.createdAt as any).$lte = params.to;
+    }
+    if (params.search) {
+      filter.$or = [
+        { customerName: { $regex: params.search, $options: 'i' } },
+        { customerEmail: { $regex: params.search, $options: 'i' } },
+        { externalDealId: { $regex: params.search, $options: 'i' } }
+      ];
+    }
+
+    const limit = params.limit && params.limit > 0 ? Math.min(params.limit, 100) : 25;
+    const page = params.page && params.page > 0 ? params.page : 1;
+
+    const query = SalesTransaction.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate({
+        path: 'vehicle',
+        populate: [
+          { path: 'make', select: 'name slug' },
+          { path: 'model', select: 'name slug' },
+          { path: 'type', select: 'name' },
+          { path: 'engine.fuelType', select: 'name' },
+          { path: 'transmission.type', select: 'name' },
+          { path: 'drivetrain', select: 'name' },
+          { path: 'status', select: 'name' }
+        ]
+      })
+      .populate('salesperson', 'name email role');
+
+    const [items, total] = await Promise.all([
+      query.lean(),
+      SalesTransaction.countDocuments(filter)
+    ]);
+
+    return {
+      data: items,
+      pagination: {
+        total,
+        page,
+        pages: Math.ceil(total / limit),
+        limit
+      }
+    };
+  },
+
+  async update(id: string, data: Partial<ISalesTransaction>) {
+    const doc = await SalesTransaction.findById(id);
+    if (!doc) return null;
+    if (doc.status !== 'pending' && data.status && data.status !== doc.status) {
+      throw new Error('Cannot change status after leaving pending; use transition endpoints');
+    }
+    Object.assign(doc, data);
+    return doc.save();
+  },
+
+  async markCompleted(id: string) {
+    const doc = await SalesTransaction.findById(id);
+    if (!doc) return null;
+    if (doc.status !== 'pending') throw new Error('Only pending sales can be completed');
+    return doc.markCompleted();
+  },
+
+  async markCancelled(id: string) {
+    const doc = await SalesTransaction.findById(id);
+    if (!doc) return null;
+    if (doc.status === 'completed') throw new Error('Cannot cancel a completed sale');
+    return doc.markCancelled();
+  },
+
+  async remove(id: string) {
+    return SalesTransaction.findOneAndDelete({ _id: id, status: 'pending' });
+  },
+
+  async summary(params: { from?: Date; to?: Date; salesperson?: string }): Promise<ISalesSummaryRow[]> {
+    return (SalesTransaction as any).buildSummary(params as any) as ISalesSummaryRow[];
+  }
+};
