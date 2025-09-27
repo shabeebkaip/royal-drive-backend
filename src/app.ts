@@ -38,7 +38,23 @@ export class App {
                 
                 const allowedOrigins = env.ALLOWED_ORIGINS.split(',').map(url => url.trim());
                 
+                // Check for exact match first
                 if (allowedOrigins.includes(origin)) {
+                    return callback(null, true);
+                }
+                
+                // Check for wildcard patterns
+                const isAllowed = allowedOrigins.some(allowedOrigin => {
+                    if (allowedOrigin.includes('*')) {
+                        // Convert wildcard pattern to regex
+                        const pattern = allowedOrigin.replace(/\*/g, '.*');
+                        const regex = new RegExp(`^${pattern}$`);
+                        return regex.test(origin);
+                    }
+                    return false;
+                });
+                
+                if (isAllowed) {
                     return callback(null, true);
                 }
                 
