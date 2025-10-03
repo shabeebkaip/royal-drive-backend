@@ -25,6 +25,9 @@ router.post('/', validateVehicle, VehicleController.createVehicle);
 // PUT /vehicles/:id - Update vehicle
 router.put('/:id', validateVehicleUpdate, VehicleController.updateVehicle);
 
+// PATCH /vehicles/:id - Partial update vehicle
+router.patch('/:id', VehicleController.patchVehicle);
+
 // PATCH /vehicles/:id/status - Update vehicle status
 router.patch('/:id/status', VehicleController.updateVehicleStatus);
 

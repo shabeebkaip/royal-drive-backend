@@ -63,6 +63,11 @@ export class VehicleService {
     return this.repo.updateInternal(id, data);
   }
 
+  // Patch method for partial updates
+  patch(id: string, data: Partial<IVehicle>) {
+    return this.repo.patch(id, data);
+  }
+
   remove(id: string) {
     return this.repo.delete(id);
   }

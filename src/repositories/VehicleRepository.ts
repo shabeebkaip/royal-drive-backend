@@ -266,6 +266,41 @@ export class VehicleRepository implements IRepository<IVehicle> {
     return !!result;
   }
 
+  // Patch method for partial updates using dot notation
+  async patch(id: string, data: Partial<IVehicle>): Promise<IVehicle | null> {
+    const { Types } = await import('mongoose');
+    
+    // Build $set object with dot notation for nested updates
+    const updateDoc: any = { $set: {} };
+    
+    const flattenObject = (obj: any, prefix = ''): void => {
+      for (const [key, value] of Object.entries(obj)) {
+        if (value === undefined) continue;
+        
+        const fullKey = prefix ? `${prefix}.${key}` : key;
+        
+        if (value && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+          flattenObject(value, fullKey);
+        } else {
+          updateDoc.$set[fullKey] = value;
+        }
+      }
+    };
+    
+    flattenObject(data);
+    
+    // Update the document
+    await Vehicle.findByIdAndUpdate(id, updateDoc, { new: true, runValidators: true });
+    
+    // Return the updated document with populated fields (excluding internal for public interface)
+    const result = await Vehicle.aggregate([
+      { $match: { _id: new Types.ObjectId(id) } },
+      ...this.getPopulationPipeline(false, false)
+    ]);
+    
+    return result[0] || null;
+  }
+
   // Helpers specific to Vehicles
   async findByVin(vin: string, includeInternalFields: boolean = false): Promise<IVehicle | null> {
     const result = await Vehicle.aggregate([

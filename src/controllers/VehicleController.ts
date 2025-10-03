@@ -193,6 +193,36 @@ export class VehicleController {
     }
   }
 
+  // Patch vehicle (partial update)
+  static async patchVehicle(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const vehicle = await vehicleService.patch(id, req.body as Partial<IVehicle>);
+
+      if (!vehicle) {
+        const response = createApiResponse(false, 'Vehicle not found');
+        res.status(404).json(response);
+        return;
+      }
+
+      const response = createApiResponse(
+        true,
+        'Vehicle updated successfully',
+        vehicle
+      );
+
+      res.status(200).json(response);
+    } catch (error) {
+      const errorResponse = createApiResponse(
+        false,
+        'Failed to patch vehicle',
+        undefined,
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+      res.status(500).json(errorResponse);
+    }
+  }
+
   // Delete vehicle
   static async deleteVehicle(req: Request, res: Response): Promise<void> {
     try {
