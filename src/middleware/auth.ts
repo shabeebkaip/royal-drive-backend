@@ -73,3 +73,29 @@ export const requireInternalAccess = requirePermission(USER_PERMISSIONS.VEHICLES
 export const canViewInternalData = (user?: IUser): boolean => {
   return user?.permissions.includes(USER_PERMISSIONS.VEHICLES_VIEW_INTERNAL) ?? false;
 };
+
+// Optional authentication: if an Authorization header is present, attempt to authenticate
+// and attach req.user; otherwise, continue without error. Useful for routes that can
+// conditionally include internal data when a user is authenticated.
+export const optionalAuthenticate = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  try {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return next();
+    }
+
+    const token = authHeader.substring(7);
+    const decoded = jwt.verify(token, env.JWT_SECRET as string) as any;
+
+    const user = await userRepository.findById(decoded.user._id);
+    if (!user || user.status !== 'active') {
+      return next();
+    }
+
+    req.user = user;
+    next();
+  } catch (_err) {
+    // Silently proceed without user if token invalid; route remains public
+    return next();
+  }
+};

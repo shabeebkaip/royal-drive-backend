@@ -32,8 +32,13 @@ export class VehicleService {
   }
 
   getByIdOrAlt(idOrVinOrStock: string) {
-    // Controller first tries id; service will attempt the alternative lookups
-    return this.repo.findByVinOrStock(idOrVinOrStock);
+    // Controller first tries id; service will attempt the alternative lookups (public)
+    return this.repo.findByVinOrStock(idOrVinOrStock, false);
+  }
+
+  // Internal alternative lookup that includes sensitive fields
+  getByIdOrAltInternal(idOrVinOrStock: string) {
+    return this.repo.findByVinOrStock(idOrVinOrStock, true);
   }
 
   async getById(id: string) {

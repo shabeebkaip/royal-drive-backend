@@ -5,7 +5,7 @@ import type { IVehicle } from '../types/vehicle.d';
 
 export class VehicleRepository implements IRepository<IVehicle> {
   // Common aggregation pipeline for populating all reference fields
-  private getPopulationPipeline(includeInternalFields: boolean = false) {
+  private getPopulationPipeline(includeInternalFields: boolean = false, excludeInternalAcquisitionCost: boolean = !false) {
     const pipeline = [
       // Lookup Make
       {
@@ -103,10 +103,17 @@ export class VehicleRepository implements IRepository<IVehicle> {
     ];
 
     // Conditionally exclude sensitive internal fields for public access
-    if (!includeInternalFields) {
+    if (!includeInternalFields && excludeInternalAcquisitionCost) {
       pipeline.push({
         $project: {
           'internal.acquisitionCost': 0,
+          'internal.notes': 0
+        }
+      } as any);
+    } else if (!includeInternalFields && !excludeInternalAcquisitionCost) {
+      // For public detail views include acquisitionCost but still hide notes
+      pipeline.push({
+        $project: {
           'internal.notes': 0
         }
       } as any);
@@ -123,7 +130,7 @@ export class VehicleRepository implements IRepository<IVehicle> {
     const { Types } = await import('mongoose');
     const result = await Vehicle.aggregate([
       { $match: { _id: new Types.ObjectId(savedVehicle._id as string) } },
-      ...this.getPopulationPipeline(true) // Include internal fields
+  ...this.getPopulationPipeline(true) // Include all internal fields including acquisitionCost
     ]);
     
     return result[0];
@@ -133,7 +140,7 @@ export class VehicleRepository implements IRepository<IVehicle> {
     const { Types } = await import('mongoose');
     const result = await Vehicle.aggregate([
       { $match: { _id: new Types.ObjectId(id) } },
-      ...this.getPopulationPipeline(false) // Exclude internal fields for public interface
+  ...this.getPopulationPipeline(false, false) // Public detail should include acquisitionCost but hide notes
     ]);
     
     return result[0] || null;
@@ -144,7 +151,7 @@ export class VehicleRepository implements IRepository<IVehicle> {
     const { Types } = await import('mongoose');
     const result = await Vehicle.aggregate([
       { $match: { _id: new Types.ObjectId(id) } },
-      ...this.getPopulationPipeline(true) // Include internal fields
+  ...this.getPopulationPipeline(true) // Include all internal fields including acquisitionCost
     ]);
     
     return result[0] || null;
@@ -153,7 +160,7 @@ export class VehicleRepository implements IRepository<IVehicle> {
   async findOne(filter: Partial<IVehicle>): Promise<IVehicle | null> {
     const result = await Vehicle.aggregate([
       { $match: filter as FilterQuery<IVehicle> },
-      ...this.getPopulationPipeline()
+  ...this.getPopulationPipeline(false, true)
     ]);
     
     return result[0] || null;
@@ -169,7 +176,7 @@ export class VehicleRepository implements IRepository<IVehicle> {
 
     const pipeline = [
       { $match: filter as FilterQuery<IVehicle> },
-      ...this.getPopulationPipeline(),
+  ...this.getPopulationPipeline(false, true),
       { $sort: sort },
       {
         $facet: {
@@ -204,7 +211,7 @@ export class VehicleRepository implements IRepository<IVehicle> {
     // Return the updated document with populated fields (excluding internal for public interface)
     const result = await Vehicle.aggregate([
       { $match: { _id: new Types.ObjectId(id) } },
-      ...this.getPopulationPipeline(false)
+  ...this.getPopulationPipeline(false, true)
     ]);
     
     return result[0] || null;
@@ -230,17 +237,18 @@ export class VehicleRepository implements IRepository<IVehicle> {
   }
 
   // Helpers specific to Vehicles
-  async findByVinOrStock(vinOrStock: string): Promise<IVehicle | null> {
+  async findByVinOrStock(vinOrStock: string, includeInternalFields: boolean = false): Promise<IVehicle | null> {
     const result = await Vehicle.aggregate([
       {
         $match: {
           $or: [
             { vin: vinOrStock },
-            { stockNumber: vinOrStock }
+            { 'internal.stockNumber': vinOrStock }
           ]
         }
       },
-      ...this.getPopulationPipeline()
+  // For detail lookups by VIN/stock, include acquisitionCost for public, and all internal for internal users
+  ...this.getPopulationPipeline(includeInternalFields, false)
     ]);
     
     return result[0] || null;
@@ -249,7 +257,7 @@ export class VehicleRepository implements IRepository<IVehicle> {
   async getFeatured(limit: number = 10): Promise<IVehicle[]> {
     const result = await Vehicle.aggregate([
       { $match: { 'marketing.featured': true, status: 'available' } },
-      ...this.getPopulationPipeline(),
+  ...this.getPopulationPipeline(false, true),
       { $sort: { createdAt: -1 as const } },
       { $limit: limit }
     ]);
@@ -269,7 +277,7 @@ export class VehicleRepository implements IRepository<IVehicle> {
         { 'marketing.keywords': { $in: [searchRegex] } },
         { 'marketing.description': searchRegex },
         { vin: searchRegex },
-        { stockNumber: searchRegex },
+  { 'internal.stockNumber': searchRegex },
       ],
     } as any;
 

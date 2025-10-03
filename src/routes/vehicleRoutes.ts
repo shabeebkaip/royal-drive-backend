@@ -1,6 +1,7 @@
 import express, { Router } from 'express';
 import { VehicleController } from '../controllers/VehicleController';
 import { validateVehicle, validateVehicleUpdate } from '../middleware/validation';
+import { optionalAuthenticate } from '../middleware/auth';
 
 const router: Router = express.Router();
 
@@ -15,8 +16,8 @@ router.get('/featured', VehicleController.getFeaturedVehicles);
 
 
 
-// GET /vehicles/:id - Get vehicle by ID, VIN, or stock number
-router.get('/:id', VehicleController.getVehicle);
+// GET /vehicles/:id - Get vehicle by ID, VIN, or stock number (optional auth to include internal fields)
+router.get('/:id', optionalAuthenticate, VehicleController.getVehicle);
 
 // POST /vehicles - Create new vehicle
 router.post('/', validateVehicle, VehicleController.createVehicle);

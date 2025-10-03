@@ -75,7 +75,7 @@ export class VehicleController {
       let vehicle;
       if (includeInternal) {
         vehicle = await vehicleService.getByIdInternal(id);
-        if (!vehicle) vehicle = await vehicleService.getByIdOrAlt(id);
+        if (!vehicle) vehicle = await vehicleService.getByIdOrAltInternal(id);
       } else {
         vehicle = await vehicleService.getById(id);
         if (!vehicle) vehicle = await vehicleService.getByIdOrAlt(id);
