@@ -206,7 +206,23 @@ export class VehicleRepository implements IRepository<IVehicle> {
 
   async update(id: string, data: Partial<IVehicle>): Promise<IVehicle | null> {
     const { Types } = await import('mongoose');
-    await Vehicle.findByIdAndUpdate(id, data, { new: true });
+    // Build a $set update to avoid replacing nested objects wholesale
+    const updateDoc: any = { $set: {} };
+    for (const [key, value] of Object.entries(data)) {
+      if (value === undefined) continue;
+      if (key === 'internal' && typeof value === 'object' && value !== null) {
+        for (const [innerKey, innerVal] of Object.entries(value as Record<string, any>)) {
+          if (innerVal === undefined) continue;
+          // Never allow client to null out stockNumber; let pre-save handle generation
+          if (innerKey === 'stockNumber' && (innerVal === null || innerVal === undefined)) continue;
+          updateDoc.$set[`internal.${innerKey}`] = innerVal;
+        }
+      } else {
+        updateDoc.$set[key] = value;
+      }
+    }
+
+    await Vehicle.findByIdAndUpdate(id, updateDoc, { new: true });
     
     // Return the updated document with populated fields (excluding internal for public interface)
     const result = await Vehicle.aggregate([
@@ -220,7 +236,21 @@ export class VehicleRepository implements IRepository<IVehicle> {
   // Internal update method that includes sensitive fields
   async updateInternal(id: string, data: Partial<IVehicle>): Promise<IVehicle | null> {
     const { Types } = await import('mongoose');
-    await Vehicle.findByIdAndUpdate(id, data, { new: true });
+    const updateDoc: any = { $set: {} };
+    for (const [key, value] of Object.entries(data)) {
+      if (value === undefined) continue;
+      if (key === 'internal' && typeof value === 'object' && value !== null) {
+        for (const [innerKey, innerVal] of Object.entries(value as Record<string, any>)) {
+          if (innerVal === undefined) continue;
+          if (innerKey === 'stockNumber' && (innerVal === null || innerVal === undefined)) continue;
+          updateDoc.$set[`internal.${innerKey}`] = innerVal;
+        }
+      } else {
+        updateDoc.$set[key] = value;
+      }
+    }
+
+    await Vehicle.findByIdAndUpdate(id, updateDoc, { new: true });
     
     // Return the updated document with populated fields including internal data
     const result = await Vehicle.aggregate([
@@ -237,14 +267,11 @@ export class VehicleRepository implements IRepository<IVehicle> {
   }
 
   // Helpers specific to Vehicles
-  async findByVinOrStock(vinOrStock: string, includeInternalFields: boolean = false): Promise<IVehicle | null> {
+  async findByVin(vin: string, includeInternalFields: boolean = false): Promise<IVehicle | null> {
     const result = await Vehicle.aggregate([
       {
         $match: {
-          $or: [
-            { vin: vinOrStock },
-            { 'internal.stockNumber': vinOrStock }
-          ]
+          vin
         }
       },
   // For detail lookups by VIN/stock, include acquisitionCost for public, and all internal for internal users
@@ -270,14 +297,13 @@ export class VehicleRepository implements IRepository<IVehicle> {
     options: PaginationOptions = { page: 1, limit: 10 }
   ): Promise<PaginatedResult<IVehicle>> {
     const searchRegex = new RegExp(q, 'i');
-    const filter: FilterQuery<IVehicle> = {
+  const filter: FilterQuery<IVehicle> = {
       $or: [
         { make: searchRegex },
         { model: searchRegex },
         { 'marketing.keywords': { $in: [searchRegex] } },
         { 'marketing.description': searchRegex },
-        { vin: searchRegex },
-  { 'internal.stockNumber': searchRegex },
+    { vin: searchRegex }
       ],
     } as any;
 

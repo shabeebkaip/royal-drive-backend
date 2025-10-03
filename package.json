@@ -21,7 +21,8 @@
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "clean": "rm -rf dist",
-    "typecheck": "tsc --noEmit"
+  "typecheck": "tsc --noEmit",
+  "migrate:fix-slug-index": "tsx scripts/fixVehicleSlugIndex.ts"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

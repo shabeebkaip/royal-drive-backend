@@ -31,14 +31,14 @@ export class VehicleService {
     return this.repo.findMany(filter, { page, limit, sortBy: 'createdAt', sortOrder: 'desc' });
   }
 
-  getByIdOrAlt(idOrVinOrStock: string) {
-    // Controller first tries id; service will attempt the alternative lookups (public)
-    return this.repo.findByVinOrStock(idOrVinOrStock, false);
+  getByIdOrAlt(idOrVin: string) {
+    // Controller first tries id; service will attempt the alternative lookup by VIN (public)
+    return this.repo.findByVin(idOrVin, false);
   }
 
   // Internal alternative lookup that includes sensitive fields
-  getByIdOrAltInternal(idOrVinOrStock: string) {
-    return this.repo.findByVinOrStock(idOrVinOrStock, true);
+  getByIdOrAltInternal(idOrVin: string) {
+    return this.repo.findByVin(idOrVin, true);
   }
 
   async getById(id: string) {

@@ -71,7 +71,7 @@ export class VehicleController {
       // Check if user can view internal data (acquisition cost, etc.)
       const includeInternal = canViewInternalData(req.user);
       
-      // Try to find by MongoDB ID first, then by VIN, then by stock number
+  // Try to find by MongoDB ID first, then by VIN (no stock number)
       let vehicle;
       if (includeInternal) {
         vehicle = await vehicleService.getByIdInternal(id);
