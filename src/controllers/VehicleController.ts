@@ -17,14 +17,15 @@ export class VehicleController {
       // Build filter object
       const filter: any = {};
 
-      if (req.query.make) filter.make = new RegExp(req.query.make as string, 'i');
-      if (req.query.model) filter.model = new RegExp(req.query.model as string, 'i');
+      if (req.query.make) filter.make = req.query.make;
+      if (req.query.model) filter.model = req.query.model;
       if (req.query.year) filter.year = parseInt(req.query.year as string);
       if (req.query.condition) filter.condition = req.query.condition;
       if (req.query.fuelType) filter['engine.fuelType'] = req.query.fuelType;
       if (req.query.transmission) filter['transmission.type'] = req.query.transmission;
       if (req.query.drivetrain) filter.drivetrain = req.query.drivetrain;
       if (req.query.status) filter.status = req.query.status;
+      if (req.query.vehicleType) filter.type = req.query.vehicleType;
 
       // Price range filtering
       if (req.query.minPrice || req.query.maxPrice) {
