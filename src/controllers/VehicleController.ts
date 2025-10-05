@@ -5,6 +5,7 @@ import { vehicleService } from '../services/VehicleService';
 import { createApiResponse } from '../utils/index';
 import { validationResult } from 'express-validator';
 import { canViewInternalData } from '../middleware/auth';
+import { Types } from 'mongoose';
 
 export class VehicleController {
   // Get all vehicles with filtering and pagination
@@ -17,15 +18,17 @@ export class VehicleController {
       // Build filter object
       const filter: any = {};
 
-      if (req.query.make) filter.make = req.query.make;
-      if (req.query.model) filter.model = req.query.model;
+      // Convert ObjectId strings to ObjectId for reference fields
+      if (req.query.make) filter.make = new Types.ObjectId(req.query.make as string);
+      if (req.query.model) filter.model = new Types.ObjectId(req.query.model as string);
       if (req.query.year) filter.year = parseInt(req.query.year as string);
       if (req.query.condition) filter.condition = req.query.condition;
-      if (req.query.fuelType) filter['engine.fuelType'] = req.query.fuelType;
-      if (req.query.transmission) filter['transmission.type'] = req.query.transmission;
-      if (req.query.drivetrain) filter.drivetrain = req.query.drivetrain;
-      if (req.query.status) filter.status = req.query.status;
-      if (req.query.vehicleType) filter.type = req.query.vehicleType;
+      if (req.query.fuelType) filter['engine.fuelType'] = new Types.ObjectId(req.query.fuelType as string);
+      if (req.query.transmission) filter['transmission.type'] = new Types.ObjectId(req.query.transmission as string);
+      if (req.query.drivetrain) filter.drivetrain = new Types.ObjectId(req.query.drivetrain as string);
+      if (req.query.status) filter.status = new Types.ObjectId(req.query.status as string);
+      if (req.query.vehicleType) filter.type = new Types.ObjectId(req.query.vehicleType as string);
+      if (req.query.color) filter['specifications.exteriorColor'] = new RegExp(req.query.color as string, 'i');
 
       // Price range filtering
       if (req.query.minPrice || req.query.maxPrice) {
@@ -41,7 +44,27 @@ export class VehicleController {
         if (req.query.maxYear) filter.year.$lte = parseInt(req.query.maxYear as string);
       }
 
-  const { data: vehicles, pagination } = await vehicleService.list(filter as any, page, limit);
+      // Handle sortBy parameter
+      let sortBy = 'createdAt';
+      let sortOrder: 'asc' | 'desc' = 'desc';
+      
+      if (req.query.sortBy) {
+        const sortParam = req.query.sortBy as string;
+        const [field, order] = sortParam.split('_');
+        
+        // Map sort fields
+        const fieldMap: Record<string, string> = {
+          'price': 'pricing.listPrice',
+          'year': 'year',
+          'mileage': 'odometer.value',
+          'created': 'createdAt'
+        };
+        
+        sortBy = fieldMap[field] || 'createdAt';
+        sortOrder = (order === 'asc' || order === 'desc') ? order : 'desc';
+      }
+
+      const { data: vehicles, pagination } = await vehicleService.list(filter as any, page, limit, sortBy, sortOrder);
 
       const response = createApiResponse(
         true,

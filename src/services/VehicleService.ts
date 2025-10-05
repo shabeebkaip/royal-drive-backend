@@ -4,31 +4,9 @@ import { VehicleRepository } from '../repositories/VehicleRepository';
 export class VehicleService {
   constructor(private readonly repo: VehicleRepository) {}
 
-  async list(filters: VehicleListFilters = {}, page = 1, limit = 10) {
-  const filter: Record<string, any> = {};
-
-  if (filters.make) filter.make = new RegExp(filters.make, 'i');
-  if (filters.model) filter.model = new RegExp(filters.model, 'i');
-    if (filters.year) filter.year = filters.year;
-    if (filters.condition) filter.condition = filters.condition;
-    if (filters.fuelType) filter['engine.fuelType'] = filters.fuelType;
-    if (filters.transmission) filter['transmission.type'] = filters.transmission;
-    if (filters.drivetrain) filter.drivetrain = filters.drivetrain;
-    if (filters.status) filter.status = filters.status;
-
-    if (filters.minPrice || filters.maxPrice) {
-      filter['pricing.listPrice'] = {};
-      if (filters.minPrice) filter['pricing.listPrice'].$gte = filters.minPrice;
-      if (filters.maxPrice) filter['pricing.listPrice'].$lte = filters.maxPrice;
-    }
-
-    if (filters.minYear || filters.maxYear) {
-      filter.year = {} as any;
-      if (filters.minYear) (filter.year as any).$gte = filters.minYear;
-      if (filters.maxYear) (filter.year as any).$lte = filters.maxYear;
-    }
-
-    return this.repo.findMany(filter, { page, limit, sortBy: 'createdAt', sortOrder: 'desc' });
+  async list(filters: VehicleListFilters = {}, page = 1, limit = 10, sortBy = 'createdAt', sortOrder: 'asc' | 'desc' = 'desc') {
+    // Filters are already properly formatted in the controller, just pass them through
+    return this.repo.findMany(filters as any, { page, limit, sortBy, sortOrder });
   }
 
   getByIdOrAlt(idOrVin: string) {
