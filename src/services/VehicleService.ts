@@ -28,6 +28,16 @@ export class VehicleService {
     return this.repo.findByIdInternal(id);
   }
 
+  // Get vehicle by slug (public view)
+  async getBySlug(slug: string) {
+    return this.repo.findBySlug(slug, false);
+  }
+
+  // Get vehicle by slug with internal data (admin/manager view)
+  async getBySlugInternal(slug: string) {
+    return this.repo.findBySlug(slug, true);
+  }
+
   create(data: Partial<IVehicle>) {
     return this.repo.create(data);
   }

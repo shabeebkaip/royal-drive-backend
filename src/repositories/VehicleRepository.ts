@@ -157,6 +157,16 @@ export class VehicleRepository implements IRepository<IVehicle> {
     return result[0] || null;
   }
 
+  // Find vehicle by slug
+  async findBySlug(slug: string, includeInternal: boolean = false): Promise<IVehicle | null> {
+    const result = await Vehicle.aggregate([
+      { $match: { 'marketing.slug': slug } },
+      ...this.getPopulationPipeline(includeInternal, !includeInternal)
+    ]);
+    
+    return result[0] || null;
+  }
+
   async findOne(filter: Partial<IVehicle>): Promise<IVehicle | null> {
     const result = await Vehicle.aggregate([
       { $match: filter as FilterQuery<IVehicle> },

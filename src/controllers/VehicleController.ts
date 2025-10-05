@@ -87,7 +87,7 @@ export class VehicleController {
     }
   }
 
-  // Get vehicle by ID or VIN
+  // Get vehicle by ID, VIN, or Slug
   static async getVehicle(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -95,14 +95,27 @@ export class VehicleController {
       // Check if user can view internal data (acquisition cost, etc.)
       const includeInternal = canViewInternalData(req.user);
       
-  // Try to find by MongoDB ID first, then by VIN (no stock number)
       let vehicle;
-      if (includeInternal) {
-        vehicle = await vehicleService.getByIdInternal(id);
-        if (!vehicle) vehicle = await vehicleService.getByIdOrAltInternal(id);
+      
+      // Check if the parameter looks like a slug (contains dashes and doesn't look like an ObjectId)
+      const isSlug = id.includes('-') && id.length > 24;
+      
+      if (isSlug) {
+        // Try to find by slug first
+        if (includeInternal) {
+          vehicle = await vehicleService.getBySlugInternal(id);
+        } else {
+          vehicle = await vehicleService.getBySlug(id);
+        }
       } else {
-        vehicle = await vehicleService.getById(id);
-        if (!vehicle) vehicle = await vehicleService.getByIdOrAlt(id);
+        // Try to find by MongoDB ID first, then by VIN
+        if (includeInternal) {
+          vehicle = await vehicleService.getByIdInternal(id);
+          if (!vehicle) vehicle = await vehicleService.getByIdOrAltInternal(id);
+        } else {
+          vehicle = await vehicleService.getById(id);
+          if (!vehicle) vehicle = await vehicleService.getByIdOrAlt(id);
+        }
       }
 
       if (!vehicle) {
