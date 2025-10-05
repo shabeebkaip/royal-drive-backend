@@ -101,14 +101,14 @@ export class VehicleController {
       const isSlug = id.includes('-') && id.length > 24;
       
       if (isSlug) {
-        // Try to find by slug first
-        if (includeInternal) {
-          vehicle = await vehicleService.getBySlugInternal(id);
-        } else {
-          vehicle = await vehicleService.getBySlug(id);
-        }
+        // Slug-based lookup is ALWAYS public (for website) - never expose internal data
+        // Add HTTP caching headers for Next.js SSR optimization
+        res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=86400');
+        res.set('CDN-Cache-Control', 'public, max-age=600');
+        
+        vehicle = await vehicleService.getBySlug(id);
       } else {
-        // Try to find by MongoDB ID first, then by VIN
+        // ObjectId or VIN lookup respects authentication
         if (includeInternal) {
           vehicle = await vehicleService.getByIdInternal(id);
           if (!vehicle) vehicle = await vehicleService.getByIdOrAltInternal(id);
@@ -129,6 +129,19 @@ export class VehicleController {
         'Vehicle retrieved successfully',
         vehicle
       );
+      
+      // Add ETag for conditional requests (Next.js can use this for revalidation)
+      if (isSlug && vehicle.updatedAt) {
+        const etag = `"${vehicle._id}-${new Date(vehicle.updatedAt).getTime()}"`;
+        res.set('ETag', etag);
+        
+        // Check if client has current version
+        if (req.headers['if-none-match'] === etag) {
+          res.status(304).end();
+          return;
+        }
+      }
+      
       res.json(response);
     } catch (error) {
       console.error('Error retrieving vehicle:', error);

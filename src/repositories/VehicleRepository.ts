@@ -104,17 +104,18 @@ export class VehicleRepository implements IRepository<IVehicle> {
 
     // Conditionally exclude sensitive internal fields for public access
     if (!includeInternalFields && excludeInternalAcquisitionCost) {
+      // Exclude entire internal object for public website access (slug-based lookups)
       pipeline.push({
         $project: {
-          'internal.acquisitionCost': 0,
-          'internal.notes': 0
+          'internal': 0
         }
       } as any);
     } else if (!includeInternalFields && !excludeInternalAcquisitionCost) {
-      // For public detail views include acquisitionCost but still hide notes
+      // For public detail views (by ID) include some internal fields but hide sensitive ones
       pipeline.push({
         $project: {
-          'internal.notes': 0
+          'internal.notes': 0,
+          'internal.targetProfit': 0
         }
       } as any);
     }
@@ -157,11 +158,106 @@ export class VehicleRepository implements IRepository<IVehicle> {
     return result[0] || null;
   }
 
-  // Find vehicle by slug
-  async findBySlug(slug: string, includeInternal: boolean = false): Promise<IVehicle | null> {
+  // Find vehicle by slug - OPTIMIZED for Next.js SSR (fast response for website)
+  // ALWAYS public (never expose internal data)
+  async findBySlug(slug: string): Promise<IVehicle | null> {
     const result = await Vehicle.aggregate([
+      // Use indexed field for fast lookup
       { $match: { 'marketing.slug': slug } },
-      ...this.getPopulationPipeline(includeInternal, !includeInternal)
+      
+      // Lookup only essential fields for website display
+      {
+        $lookup: {
+          from: 'makes',
+          localField: 'make',
+          foreignField: '_id',
+          as: 'make',
+          pipeline: [{ $project: { name: 1, slug: 1, logo: 1 } }]
+        }
+      },
+      { $unwind: { path: '$make', preserveNullAndEmptyArrays: true } },
+      
+      {
+        $lookup: {
+          from: 'models',
+          localField: 'model',
+          foreignField: '_id',
+          as: 'model',
+          pipeline: [{ $project: { name: 1, slug: 1 } }]
+        }
+      },
+      { $unwind: { path: '$model', preserveNullAndEmptyArrays: true } },
+      
+      {
+        $lookup: {
+          from: 'vehicletypes',
+          localField: 'type',
+          foreignField: '_id',
+          as: 'type',
+          pipeline: [{ $project: { name: 1, slug: 1, icon: 1 } }]
+        }
+      },
+      { $unwind: { path: '$type', preserveNullAndEmptyArrays: true } },
+      
+      {
+        $lookup: {
+          from: 'status',
+          localField: 'status',
+          foreignField: '_id',
+          as: 'status',
+          pipeline: [{ $project: { name: 1, slug: 1, color: 1 } }]
+        }
+      },
+      { $unwind: { path: '$status', preserveNullAndEmptyArrays: true } },
+      
+      {
+        $lookup: {
+          from: 'fueltypes',
+          localField: 'engine.fuelType',
+          foreignField: '_id',
+          as: 'engine.fuelTypeData',
+          pipeline: [{ $project: { name: 1, slug: 1 } }]
+        }
+      },
+      {
+        $addFields: {
+          'engine.fuelType': { $arrayElemAt: ['$engine.fuelTypeData', 0] }
+        }
+      },
+      { $unset: 'engine.fuelTypeData' },
+      
+      {
+        $lookup: {
+          from: 'transmissions',
+          localField: 'transmission.type',
+          foreignField: '_id',
+          as: 'transmission.typeData',
+          pipeline: [{ $project: { name: 1, slug: 1 } }]
+        }
+      },
+      {
+        $addFields: {
+          'transmission.type': { $arrayElemAt: ['$transmission.typeData', 0] }
+        }
+      },
+      { $unset: 'transmission.typeData' },
+      
+      {
+        $lookup: {
+          from: 'drivetypes',
+          localField: 'drivetrain',
+          foreignField: '_id',
+          as: 'drivetrain',
+          pipeline: [{ $project: { name: 1, slug: 1 } }]
+        }
+      },
+      { $unwind: { path: '$drivetrain', preserveNullAndEmptyArrays: true } },
+      
+      // Exclude entire internal object for public website
+      { $project: { 'internal': 0 } },
+      
+      // Limit to single result for performance
+      { $limit: 1 }
     ]);
     
     return result[0] || null;

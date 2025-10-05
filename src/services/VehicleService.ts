@@ -1,5 +1,6 @@
 import type { IVehicle, VehicleListFilters } from '../types/vehicle.d';
 import { VehicleRepository } from '../repositories/VehicleRepository';
+import { cache } from '../utils/cache';
 
 export class VehicleService {
   constructor(private readonly repo: VehicleRepository) {}
@@ -28,36 +29,77 @@ export class VehicleService {
     return this.repo.findByIdInternal(id);
   }
 
-  // Get vehicle by slug (public view)
+  // Get vehicle by slug - OPTIMIZED with caching for Next.js SSR
+  // ALWAYS public (for website), never expose internal data
   async getBySlug(slug: string) {
-    return this.repo.findBySlug(slug, false);
+    // Check cache first (5 minute TTL)
+    const cacheKey = `vehicle:slug:${slug}`;
+    const cached = cache.get<IVehicle>(cacheKey);
+    
+    if (cached) {
+      return cached;
+    }
+
+    // Cache miss - fetch from database
+    const vehicle = await this.repo.findBySlug(slug);
+    
+    // Cache the result for 5 minutes
+    if (vehicle) {
+      cache.set(cacheKey, vehicle, 5 * 60 * 1000);
+    }
+    
+    return vehicle;
   }
 
-  // Get vehicle by slug with internal data (admin/manager view)
-  async getBySlugInternal(slug: string) {
-    return this.repo.findBySlug(slug, true);
+  async create(data: Partial<IVehicle>) {
+    const vehicle = await this.repo.create(data);
+    // Invalidate list caches when new vehicle is created
+    cache.deletePattern('vehicle:list:*');
+    return vehicle;
   }
 
-  create(data: Partial<IVehicle>) {
-    return this.repo.create(data);
-  }
-
-  update(id: string, data: Partial<IVehicle>) {
-    return this.repo.update(id, data);
+  async update(id: string, data: Partial<IVehicle>) {
+    const vehicle = await this.repo.update(id, data);
+    // Invalidate caches for this vehicle
+    if (vehicle?.marketing?.slug) {
+      cache.delete(`vehicle:slug:${vehicle.marketing.slug}`);
+    }
+    cache.delete(`vehicle:id:${id}`);
+    cache.deletePattern('vehicle:list:*');
+    return vehicle;
   }
 
   // Internal update method that returns acquisition cost and sensitive data
-  updateInternal(id: string, data: Partial<IVehicle>) {
-    return this.repo.updateInternal(id, data);
+  async updateInternal(id: string, data: Partial<IVehicle>) {
+    const vehicle = await this.repo.updateInternal(id, data);
+    // Invalidate caches for this vehicle
+    if (vehicle?.marketing?.slug) {
+      cache.delete(`vehicle:slug:${vehicle.marketing.slug}`);
+    }
+    cache.delete(`vehicle:id:${id}`);
+    cache.deletePattern('vehicle:list:*');
+    return vehicle;
   }
 
   // Patch method for partial updates
-  patch(id: string, data: Partial<IVehicle>) {
-    return this.repo.patch(id, data);
+  async patch(id: string, data: Partial<IVehicle>) {
+    const vehicle = await this.repo.patch(id, data);
+    // Invalidate caches for this vehicle
+    if (vehicle?.marketing?.slug) {
+      cache.delete(`vehicle:slug:${vehicle.marketing.slug}`);
+    }
+    cache.delete(`vehicle:id:${id}`);
+    cache.deletePattern('vehicle:list:*');
+    return vehicle;
   }
 
-  remove(id: string) {
-    return this.repo.delete(id);
+  async remove(id: string) {
+    const result = await this.repo.delete(id);
+    // Invalidate all caches when vehicle is deleted
+    cache.delete(`vehicle:id:${id}`);
+    cache.deletePattern('vehicle:slug:*');
+    cache.deletePattern('vehicle:list:*');
+    return result;
   }
 
   getFeatured(limit = 6) {
