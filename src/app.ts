@@ -33,10 +33,16 @@ export class App {
         // CORS configuration
         this.app.use(cors({
             origin: (origin, callback) => {
-                // Allow requests with no origin (mobile apps, desktop apps, Postman, etc.)
+                // Allow requests with no origin (mobile apps, desktop apps, Postman, server-to-server, etc.)
                 if (!origin) return callback(null, true);
                 
                 const allowedOrigins = env.ALLOWED_ORIGINS.split(',').map(url => url.trim());
+                
+                // Log origin for debugging (only in development)
+                if (isDevelopment) {
+                    console.log(`CORS request from origin: ${origin}`);
+                    console.log(`Allowed origins: ${allowedOrigins.join(', ')}`);
+                }
                 
                 // Check for exact match first
                 if (allowedOrigins.includes(origin)) {
@@ -45,6 +51,9 @@ export class App {
                 
                 // Check for wildcard patterns
                 const isAllowed = allowedOrigins.some(allowedOrigin => {
+                    if (allowedOrigin === '*') {
+                        return true;
+                    }
                     if (allowedOrigin.includes('*')) {
                         // Convert wildcard pattern to regex
                         const pattern = allowedOrigin.replace(/\*/g, '.*');
@@ -58,12 +67,23 @@ export class App {
                     return callback(null, true);
                 }
                 
+                // Log blocked origin (important for debugging production issues)
+                console.error(`CORS blocked origin: ${origin}`);
+                console.error(`Allowed origins: ${allowedOrigins.join(', ')}`);
+                
                 return callback(new Error('Not allowed by CORS'), false);
             },
             credentials: true,
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-            allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+            allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+            exposedHeaders: ['ETag', 'Cache-Control', 'Content-Length', 'X-Request-Id'],
+            maxAge: 86400, // 24 hours - cache preflight requests
+            preflightContinue: false,
+            optionsSuccessStatus: 204
         }));
+
+        // Explicitly handle OPTIONS preflight requests
+        this.app.options('*', cors());
 
         // Body parsing
         this.app.use(express.json({limit: '10mb'}));
