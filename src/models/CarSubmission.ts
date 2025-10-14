@@ -4,25 +4,25 @@ import { ICarSubmission } from '../types/carSubmission.d';
 const AddressSchema = new Schema({
   street: {
     type: String,
-    required: [true, 'Street address is required'],
+    required: false,
     trim: true,
     maxlength: [200, 'Street address cannot exceed 200 characters']
   },
   city: {
     type: String,
-    required: [true, 'City is required'],
+    required: false,
     trim: true,
     maxlength: [50, 'City cannot exceed 50 characters']
   },
   province: {
     type: String,
-    required: [true, 'Province is required'],
+    required: false,
     trim: true,
     maxlength: [50, 'Province cannot exceed 50 characters']
   },
   postalCode: {
     type: String,
-    required: [true, 'Postal code is required'],
+    required: false,
     trim: true,
     maxlength: [10, 'Postal code cannot exceed 10 characters']
   },
@@ -89,32 +89,32 @@ const CarSubmissionSchema = new Schema<ICarSubmission>({
     bodyType: {
       type: String,
       enum: ['sedan', 'suv', 'coupe', 'hatchback', 'truck', 'convertible', 'wagon', 'other'],
-      required: [true, 'Body type is required']
+      required: false
     },
     fuelType: {
       type: String,
       enum: ['gasoline', 'diesel', 'hybrid', 'electric', 'other'],
-      required: [true, 'Fuel type is required']
+      required: false
     },
     transmission: {
       type: String,
       enum: ['manual', 'automatic', 'cvt'],
-      required: [true, 'Transmission type is required']
+      required: false
     },
     drivetrain: {
       type: String,
       enum: ['fwd', 'rwd', 'awd', '4wd'],
-      required: [true, 'Drivetrain is required']
+      required: false
     },
     exteriorColor: {
       type: String,
-      required: [true, 'Exterior color is required'],
+      required: false,
       trim: true,
       maxlength: [30, 'Exterior color cannot exceed 30 characters']
     },
     interiorColor: {
       type: String,
-      required: [true, 'Interior color is required'],
+      required: false,
       trim: true,
       maxlength: [30, 'Interior color cannot exceed 30 characters']
     },
@@ -127,6 +127,16 @@ const CarSubmissionSchema = new Schema<ICarSubmission>({
       type: String,
       trim: true,
       maxlength: [10, 'License plate cannot exceed 10 characters']
+    },
+    trimLevel: {
+      type: String,
+      trim: true,
+      maxlength: [50, 'Trim level cannot exceed 50 characters']
+    },
+    engineSize: {
+      type: String,
+      trim: true,
+      maxlength: [50, 'Engine size cannot exceed 50 characters']
     }
   },
 
@@ -148,7 +158,7 @@ const CarSubmissionSchema = new Schema<ICarSubmission>({
     },
     reasonForSelling: {
       type: String,
-      required: [true, 'Reason for selling is required'],
+      required: false,
       trim: true,
       maxlength: [500, 'Reason for selling cannot exceed 500 characters']
     }
@@ -182,10 +192,21 @@ const CarSubmissionSchema = new Schema<ICarSubmission>({
       match: [/^\+?[\d\s-()]+$/, 'Please enter a valid phone number']
     },
     address: AddressSchema,
+    preferredContactMethod: {
+      type: String,
+      enum: ['email', 'phone', 'either'],
+      default: 'either'
+    },
+    preferredContactTime: {
+      type: String,
+      trim: true,
+      maxlength: [100, 'Preferred contact time cannot exceed 100 characters']
+    },
+    // Backwards compatibility - map to preferredContactMethod
     preferredContact: {
       type: String,
-      enum: ['email', 'phone', 'both'],
-      default: 'both'
+      enum: ['email', 'phone', 'both', 'either'],
+      default: 'either'
     },
     bestTimeToCall: {
       type: String,
@@ -198,13 +219,13 @@ const CarSubmissionSchema = new Schema<ICarSubmission>({
   history: {
     previousOwners: {
       type: Number,
-      required: [true, 'Number of previous owners is required'],
+      required: false,
       min: [1, 'Must have at least 1 owner'],
       max: [20, 'Too many previous owners']
     },
     accidentHistory: {
       type: Boolean,
-      required: [true, 'Accident history information is required']
+      required: false
     },
     accidentDescription: {
       type: String,
@@ -213,7 +234,7 @@ const CarSubmissionSchema = new Schema<ICarSubmission>({
     },
     serviceHistory: {
       type: Boolean,
-      required: [true, 'Service history information is required']
+      required: false
     },
     serviceRecords: {
       type: String,

@@ -3,6 +3,7 @@ import type { IModel } from '../types/model';
 import { modelService } from '../services/ModelService';
 import { createApiResponse } from '@/utils/index';
 import { validationResult } from 'express-validator';
+import mongoose from 'mongoose';
 
 export class ModelController {
   // GET /models - Get all models with filtering and pagination
@@ -23,11 +24,13 @@ export class ModelController {
       }
 
       if (req.query.make) {
-        filters.make = req.query.make as string;
+        // Convert make string to ObjectId
+        filters.make = new mongoose.Types.ObjectId(req.query.make as string);
       }
 
       if (req.query.vehicleType) {
-        filters.vehicleType = req.query.vehicleType as string;
+        // Convert vehicleType string to ObjectId
+        filters.vehicleType = new mongoose.Types.ObjectId(req.query.vehicleType as string);
       }
 
       const { data: models, pagination } = await modelService.list(filters, page, limit);

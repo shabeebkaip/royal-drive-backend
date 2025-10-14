@@ -121,6 +121,16 @@ export class App {
             });
         });
 
+        // CORS diagnostic endpoint
+        this.app.get('/cors-test', (req, res) => {
+            res.status(200).json({
+                message: 'CORS is working!',
+                origin: req.headers.origin || 'No origin header',
+                allowedOrigins: env.ALLOWED_ORIGINS,
+                timestamp: new Date().toISOString()
+            });
+        });
+
         // API routes
         this.app.use('/api/v1', apiRoutes);
 

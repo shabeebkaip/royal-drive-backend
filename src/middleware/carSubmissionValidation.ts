@@ -1,39 +1,54 @@
 import { body, param, query } from 'express-validator';
 
-// Public create submission validation
+// Public create submission validation (minimal required fields for website form)
 export const validateCreateCarSubmission = [
-  body('vehicle.make').notEmpty().withMessage('Make is required').isLength({ max: 50 }),
-  body('vehicle.model').notEmpty().withMessage('Model is required').isLength({ max: 50 }),
+  // Vehicle - Required fields
+  body('vehicle.make').notEmpty().withMessage('Make is required').isLength({ max: 50 }).trim(),
+  body('vehicle.model').notEmpty().withMessage('Model is required').isLength({ max: 50 }).trim(),
   body('vehicle.year').isInt({ min: 1900, max: new Date().getFullYear() + 1 }).withMessage('Invalid year'),
   body('vehicle.mileage').isInt({ min: 0 }).withMessage('Mileage must be >= 0'),
   body('vehicle.condition').isIn(['excellent', 'good', 'fair', 'poor']).withMessage('Invalid condition'),
-  body('vehicle.bodyType').isIn(['sedan', 'suv', 'coupe', 'hatchback', 'truck', 'convertible', 'wagon', 'other']).withMessage('Invalid body type'),
-  body('vehicle.fuelType').isIn(['gasoline', 'diesel', 'hybrid', 'electric', 'other']).withMessage('Invalid fuel type'),
-  body('vehicle.transmission').isIn(['manual', 'automatic', 'cvt']).withMessage('Invalid transmission'),
-  body('vehicle.drivetrain').isIn(['fwd', 'rwd', 'awd', '4wd']).withMessage('Invalid drivetrain'),
-  body('vehicle.exteriorColor').notEmpty().withMessage('Exterior color required'),
-  body('vehicle.interiorColor').notEmpty().withMessage('Interior color required'),
+  
+  // Vehicle - Optional fields (can be empty strings or missing)
+  body('vehicle.bodyType').optional({ checkFalsy: true }).customSanitizer(value => value?.toLowerCase()).isIn(['sedan', 'suv', 'coupe', 'hatchback', 'truck', 'convertible', 'wagon', 'other']).withMessage('Invalid body type'),
+  body('vehicle.fuelType').optional({ checkFalsy: true }).customSanitizer(value => value?.toLowerCase()).isIn(['gasoline', 'diesel', 'hybrid', 'electric', 'other']).withMessage('Invalid fuel type'),
+  body('vehicle.transmission').optional({ checkFalsy: true }).customSanitizer(value => value?.toLowerCase()).isIn(['manual', 'automatic', 'cvt']).withMessage('Invalid transmission'),
+  body('vehicle.drivetrain').optional({ checkFalsy: true }).customSanitizer(value => value?.toLowerCase()).isIn(['fwd', 'rwd', 'awd', '4wd']).withMessage('Invalid drivetrain'),
+  body('vehicle.exteriorColor').optional({ checkFalsy: true }).trim().isLength({ max: 30 }),
+  body('vehicle.interiorColor').optional({ checkFalsy: true }).trim().isLength({ max: 30 }),
+  body('vehicle.vin').optional({ checkFalsy: true }).trim().isLength({ max: 17 }),
+  body('vehicle.trimLevel').optional({ checkFalsy: true }).trim().isLength({ max: 50 }),
+  body('vehicle.engineSize').optional({ checkFalsy: true }).trim().isLength({ max: 50 }),
 
+  // Pricing - Required price, optional other fields
   body('pricing.expectedPrice').isFloat({ min: 0 }).withMessage('Expected price must be >= 0'),
-  body('pricing.priceFlexible').isBoolean().withMessage('priceFlexible must be boolean'),
-  body('pricing.reasonForSelling').notEmpty().isLength({ max: 500 }),
+  body('pricing.priceFlexible').optional().isBoolean().withMessage('priceFlexible must be boolean'),
+  body('pricing.reasonForSelling').optional({ checkFalsy: true }).trim().isLength({ max: 500 }),
 
-  body('owner.firstName').notEmpty().isLength({ max: 50 }),
-  body('owner.lastName').notEmpty().isLength({ max: 50 }),
-  body('owner.email').isEmail().withMessage('Valid email required'),
-  body('owner.phone').matches(/^\+?[\d\s-()]+$/).withMessage('Invalid phone'),
-  body('owner.address.street').notEmpty(),
-  body('owner.address.city').notEmpty(),
-  body('owner.address.province').notEmpty(),
-  body('owner.address.postalCode').notEmpty(),
-  body('owner.preferredContact').optional().isIn(['email', 'phone', 'both']),
+  // Owner - Required contact info, optional address
+  body('owner.firstName').notEmpty().withMessage('First name is required').isLength({ max: 50 }).trim(),
+  body('owner.lastName').notEmpty().withMessage('Last name is required').isLength({ max: 50 }).trim(),
+  body('owner.email').isEmail().normalizeEmail().withMessage('Valid email required'),
+  body('owner.phone').notEmpty().withMessage('Phone is required').matches(/^\+?[\d\s-()]+$/).withMessage('Invalid phone format'),
+  body('owner.preferredContactMethod').optional({ checkFalsy: true }).isIn(['email', 'phone', 'either']).withMessage('Invalid contact method'),
+  body('owner.preferredContactTime').optional({ checkFalsy: true }).trim().isLength({ max: 100 }),
+  
+  // Address - All optional for public submission
+  body('owner.address.street').optional({ checkFalsy: true }).trim().isLength({ max: 200 }),
+  body('owner.address.city').optional({ checkFalsy: true }).trim().isLength({ max: 50 }),
+  body('owner.address.province').optional({ checkFalsy: true }).trim().isLength({ max: 50 }),
+  body('owner.address.postalCode').optional({ checkFalsy: true }).trim().isLength({ max: 10 }),
+  body('owner.address.country').optional({ checkFalsy: true }).trim().isLength({ max: 50 }),
 
-  body('history.previousOwners').isInt({ min: 1, max: 20 }),
-  body('history.accidentHistory').isBoolean(),
-  body('history.serviceHistory').isBoolean(),
+  // History - All optional for public submission
+  body('history.previousOwners').optional().isInt({ min: 1, max: 20 }),
+  body('history.accidentHistory').optional().isBoolean(),
+  body('history.serviceHistory').optional().isBoolean(),
 
+  // Media & Features - Optional
+  body('media.images').optional().isArray().withMessage('Images must be an array'),
+  body('media.images.*').optional().isURL().withMessage('Each image must be a valid URL'),
   body('features').optional().isObject(),
-  body('images').optional().isArray(),
   body('source').optional().isIn(['website', 'phone', 'referral', 'walk-in', 'social-media'])
 ];
 
