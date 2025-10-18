@@ -9,7 +9,35 @@ export class MakeRepository implements IRepository<IMake> {
   }
 
   async findById(id: string): Promise<IMake | null> {
-    return Make.findById(id).exec();
+    const { ObjectId } = require('mongoose').Types;
+    
+    const pipeline: any[] = [
+      { $match: { _id: new ObjectId(id) } },
+      // Lookup vehicles for this make
+      {
+        $lookup: {
+          from: 'vehicles',
+          localField: '_id',
+          foreignField: 'make',
+          as: 'vehicles'
+        }
+      },
+      // Add vehicleCount field
+      {
+        $addFields: {
+          vehicleCount: { $size: '$vehicles' }
+        }
+      },
+      // Remove vehicles array
+      {
+        $project: {
+          vehicles: 0
+        }
+      }
+    ];
+
+    const result = await Make.aggregate(pipeline).exec();
+    return result.length > 0 ? result[0] : null;
   }
 
   async findOne(filter: Partial<IMake>): Promise<IMake | null> {
@@ -29,15 +57,57 @@ export class MakeRepository implements IRepository<IMake> {
     const sortOrder = options.sortOrder === 'desc' ? -1 : 1;
     sort[sortBy] = sortOrder;
 
-    const [data, total] = await Promise.all([
-      Make.find(filter as FilterQuery<IMake>)
-        .sort(sort)
-        .skip(skip)
-        .limit(limit)
-        .exec(),
-      Make.countDocuments(filter as FilterQuery<IMake>).exec(),
-    ]);
+    // Build aggregation pipeline to include vehicle count
+    const matchStage: any = {};
+    Object.entries(filter).forEach(([key, value]) => {
+      if (value !== undefined) {
+        matchStage[key] = value;
+      }
+    });
 
+    const pipeline: any[] = [
+      { $match: matchStage },
+      // Lookup vehicles for this make
+      {
+        $lookup: {
+          from: 'vehicles',
+          localField: '_id',
+          foreignField: 'make',
+          as: 'vehicles'
+        }
+      },
+      // Add vehicleCount field
+      {
+        $addFields: {
+          vehicleCount: { $size: '$vehicles' }
+        }
+      },
+      // Remove vehicles array
+      {
+        $project: {
+          vehicles: 0
+        }
+      },
+      // Sort
+      { $sort: sort },
+      // Facet for pagination
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: limit }
+          ],
+          totalCount: [
+            { $count: 'count' }
+          ]
+        }
+      }
+    ];
+
+    const [result] = await Make.aggregate(pipeline).exec();
+    
+    const data = result.data || [];
+    const total = result.totalCount[0]?.count || 0;
     const pages = Math.ceil(total / limit) || 1;
 
     return {
@@ -67,7 +137,33 @@ export class MakeRepository implements IRepository<IMake> {
 
   // Helper methods specific to Makes
   async findBySlug(slug: string): Promise<IMake | null> {
-    return Make.findOne({ slug }).exec();
+    const pipeline: any[] = [
+      { $match: { slug } },
+      // Lookup vehicles for this make
+      {
+        $lookup: {
+          from: 'vehicles',
+          localField: '_id',
+          foreignField: 'make',
+          as: 'vehicles'
+        }
+      },
+      // Add vehicleCount field
+      {
+        $addFields: {
+          vehicleCount: { $size: '$vehicles' }
+        }
+      },
+      // Remove vehicles array
+      {
+        $project: {
+          vehicles: 0
+        }
+      }
+    ];
+
+    const result = await Make.aggregate(pipeline).exec();
+    return result.length > 0 ? result[0] : null;
   }
 
   async findByName(name: string): Promise<IMake | null> {
@@ -103,12 +199,37 @@ export class MakeRepository implements IRepository<IMake> {
   }
 
   async getPopular(limit = 10): Promise<IMake[]> {
-    // This would typically join with Vehicle collection to get actual counts
-    // For now, return active makes sorted by name
-    return Make.find({ active: true })
-      .sort({ name: 1 })
-      .limit(limit)
-      .exec();
+    // Get makes with vehicle count, sorted by vehicle count descending
+    const pipeline: any[] = [
+      { $match: { active: true } },
+      // Lookup vehicles for this make
+      {
+        $lookup: {
+          from: 'vehicles',
+          localField: '_id',
+          foreignField: 'make',
+          as: 'vehicles'
+        }
+      },
+      // Add vehicleCount field
+      {
+        $addFields: {
+          vehicleCount: { $size: '$vehicles' }
+        }
+      },
+      // Remove vehicles array
+      {
+        $project: {
+          vehicles: 0
+        }
+      },
+      // Sort by vehicle count descending (most popular first)
+      { $sort: { vehicleCount: -1, name: 1 } },
+      // Limit results
+      { $limit: limit }
+    ];
+
+    return Make.aggregate(pipeline).exec();
   }
 }
 
