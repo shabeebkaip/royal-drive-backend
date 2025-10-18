@@ -319,8 +319,6 @@ export class VehicleRepository implements IRepository<IVehicle> {
       if (key === 'internal' && typeof value === 'object' && value !== null) {
         for (const [innerKey, innerVal] of Object.entries(value as Record<string, any>)) {
           if (innerVal === undefined) continue;
-          // Never allow client to null out stockNumber; let pre-save handle generation
-          if (innerKey === 'stockNumber' && (innerVal === null || innerVal === undefined)) continue;
           updateDoc.$set[`internal.${innerKey}`] = innerVal;
         }
       } else {
@@ -348,7 +346,6 @@ export class VehicleRepository implements IRepository<IVehicle> {
       if (key === 'internal' && typeof value === 'object' && value !== null) {
         for (const [innerKey, innerVal] of Object.entries(value as Record<string, any>)) {
           if (innerVal === undefined) continue;
-          if (innerKey === 'stockNumber' && (innerVal === null || innerVal === undefined)) continue;
           updateDoc.$set[`internal.${innerKey}`] = innerVal;
         }
       } else {

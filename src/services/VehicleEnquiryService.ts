@@ -74,7 +74,7 @@ export class VehicleEnquiryService {
       VehicleEnquiry.find(filter)
         .populate({
           path: 'vehicle',
-          select: 'internal.stockNumber make model year pricing.listPrice marketing.featured',
+          select: 'make model year pricing.listPrice marketing.featured',
           populate: [
             {
               path: 'make',
@@ -114,7 +114,7 @@ export class VehicleEnquiryService {
     return await VehicleEnquiry.findById(enquiryId)
       .populate({
         path: 'vehicle',
-        select: 'internal.stockNumber make model year pricing marketing.description images',
+        select: 'make model year pricing marketing.description images',
         populate: [
           {
             path: 'make',
@@ -160,7 +160,7 @@ export class VehicleEnquiryService {
     )
       .populate({
         path: 'vehicle',
-        select: 'internal.stockNumber make model year pricing',
+        select: 'make model year pricing',
         populate: [
           {
             path: 'make',
@@ -317,7 +317,7 @@ export class VehicleEnquiryService {
     return await VehicleEnquiry.find({ assignedTo: userId })
       .populate({
         path: 'vehicle',
-        select: 'internal.stockNumber make model year',
+        select: 'make model year',
         populate: [
           {
             path: 'make',

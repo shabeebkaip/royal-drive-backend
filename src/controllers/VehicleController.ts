@@ -185,9 +185,6 @@ export class VehicleController {
         if (error.message.includes('vin_1 dup key')) {
           statusCode = 409;
           message = 'Vehicle with this VIN already exists';
-        } else if (error.message.includes('stockNumber_1 dup key')) {
-          statusCode = 409;
-          message = 'Vehicle with this stock number already exists';
         }
       }
 
