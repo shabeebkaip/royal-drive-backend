@@ -10,6 +10,8 @@ export class MakeController {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
+      const sortBy = (req.query.sortBy as string) || 'name';
+      const sortOrder = (req.query.sortOrder as 'asc' | 'desc') || 'asc';
 
       // Build filter object
       const filters: any = {};
@@ -22,7 +24,7 @@ export class MakeController {
         filters.search = req.query.search as string;
       }
 
-      const { data: makes, pagination } = await makeService.list(filters, page, limit);
+      const { data: makes, pagination } = await makeService.list(filters, page, limit, sortBy, sortOrder);
 
       const response = createApiResponse(
         true,

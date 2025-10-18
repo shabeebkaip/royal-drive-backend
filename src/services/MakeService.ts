@@ -4,7 +4,7 @@ import { MakeRepository } from '@/repositories/MakeRepository';
 export class MakeService {
   constructor(private readonly repo: MakeRepository) {}
 
-  async list(filters: MakeListFilters = {}, page = 1, limit = 10) {
+  async list(filters: MakeListFilters = {}, page = 1, limit = 10, sortBy = 'name', sortOrder: 'asc' | 'desc' = 'asc') {
     const filter: Record<string, any> = {};
 
     if (filters.active !== undefined) {
@@ -22,8 +22,8 @@ export class MakeService {
     return this.repo.findMany(filter, { 
       page, 
       limit, 
-      sortBy: 'name', 
-      sortOrder: 'asc' 
+      sortBy, 
+      sortOrder 
     });
   }
 
