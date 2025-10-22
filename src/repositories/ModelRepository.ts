@@ -1,4 +1,4 @@
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, Types } from 'mongoose';
 import { Model } from '../models/model';
 import type { IModel, ModelListFilters } from '../types/model';
 
@@ -9,10 +9,9 @@ export class ModelRepository implements IRepository<IModel> {
   }
 
   async findById(id: string): Promise<IModel | null> {
-    const { ObjectId } = require('mongoose').Types;
     
     const pipeline: any[] = [
-      { $match: { _id: new ObjectId(id) } },
+      { $match: { _id: new Types.ObjectId(id) } },
       // Lookup to populate make
       {
         $lookup: {

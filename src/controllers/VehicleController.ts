@@ -274,11 +274,34 @@ export class VehicleController {
   static async deleteVehicle(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-  const deleted = await vehicleService.remove(id);
-
-      if (!deleted) {
+      
+      // Check if vehicle exists and get its status
+      const vehicle = await vehicleService.getById(id);
+      
+      if (!vehicle) {
         const response = createApiResponse(false, 'Vehicle not found');
         res.status(404).json(response);
+        return;
+      }
+      
+      // Prevent deletion of sold vehicles
+      if (vehicle.status && typeof vehicle.status === 'object' && 'name' in vehicle.status) {
+        // If status is populated
+        if ((vehicle.status as any).name?.toLowerCase() === 'sold') {
+          const response = createApiResponse(
+            false, 
+            'Cannot delete sold vehicles. Sold vehicles must be retained for record-keeping and compliance.'
+          );
+          res.status(403).json(response);
+          return;
+        }
+      }
+      
+      const deleted = await vehicleService.remove(id);
+
+      if (!deleted) {
+        const response = createApiResponse(false, 'Failed to delete vehicle');
+        res.status(500).json(response);
         return;
       }
 

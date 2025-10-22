@@ -1,4 +1,4 @@
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, Types } from 'mongoose';
 import { Make } from '../models/make';
 import type { IMake } from '../types/make';
 
@@ -9,10 +9,9 @@ export class MakeRepository implements IRepository<IMake> {
   }
 
   async findById(id: string): Promise<IMake | null> {
-    const { ObjectId } = require('mongoose').Types;
     
     const pipeline: any[] = [
-      { $match: { _id: new ObjectId(id) } },
+      { $match: { _id: new Types.ObjectId(id) } },
       // Lookup vehicles for this make
       {
         $lookup: {
