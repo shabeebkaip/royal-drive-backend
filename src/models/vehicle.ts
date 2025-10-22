@@ -144,6 +144,11 @@ const VehicleSchema = new Schema<IVehicle>({
       required: [true, 'List price is required'],
       min: [0, 'Price cannot be negative']
     },
+    licensingPrice: {
+      type: Number,
+      default: 70, // Default $70 for licensing
+      min: [0, 'Licensing price cannot be negative']
+    },
     currency: {
       type: String,
       default: 'CAD',

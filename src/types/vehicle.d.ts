@@ -54,6 +54,7 @@ export interface IVehicle extends Document {
   // Pricing
   pricing: {
     listPrice: number; // CAD
+    licensingPrice?: number; // Default $70 for licensing, can be manually adjusted
     currency: 'CAD';
     taxes: {
       hst: number; // 13% in Ontario
@@ -246,6 +247,7 @@ export interface CreateVehicleRequest {
   // Pricing
   pricing: {
     listPrice: number;
+    licensingPrice?: number; // Default $70 for licensing, can be manually adjusted
     currency: 'CAD';
     taxes: {
       hst: number;
