@@ -155,7 +155,6 @@ export interface IVehicle extends Document {
 
   // Internal Tracking
   internal: {
-    stockNumber: string;
     acquisitionDate: Date;
     acquisitionCost?: number;
     daysInInventory: number;
@@ -163,6 +162,10 @@ export interface IVehicle extends Document {
     nextServiceDue?: Date;
     assignedSalesperson?: string;
     notes?: string;
+    // Sale Information (populated when vehicle is sold)
+    saleTransaction?: Types.ObjectId; // Reference to SalesTransaction
+    actualSalePrice?: number; // The actual price the vehicle was sold for
+    soldDate?: Date; // Date when vehicle was sold
   };
 
   // SEO & Marketing
@@ -326,15 +329,18 @@ export interface CreateVehicleRequest {
     };
   };
 
-  // Internal Tracking - stockNumber is auto-generated, acquisitionDate defaults to now
+  // Internal Tracking - acquisitionDate defaults to now
   internal: {
-    stockNumber?: string; // Optional - auto-generated if not provided
     acquisitionDate?: Date; // Optional - defaults to now
     acquisitionCost?: number;
     lastServiceDate?: Date;
     nextServiceDue?: Date;
     assignedSalesperson?: string;
     notes?: string;
+    // Sale Information (populated when vehicle is sold)
+    saleTransaction?: string; // SalesTransaction ObjectId as string
+    actualSalePrice?: number; // The actual price the vehicle was sold for
+    soldDate?: Date; // Date when vehicle was sold
   };
 
   // SEO & Marketing

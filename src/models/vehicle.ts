@@ -314,7 +314,17 @@ const VehicleSchema = new Schema<IVehicle>({
     lastServiceDate: Date,
     nextServiceDue: Date,
     assignedSalesperson: String,
-    notes: String
+    notes: String,
+    // Sale Information (populated when vehicle is sold)
+    saleTransaction: {
+      type: Schema.Types.ObjectId,
+      ref: 'SalesTransaction'
+    },
+    actualSalePrice: {
+      type: Number,
+      min: [0, 'Sale price cannot be negative']
+    },
+    soldDate: Date
   },
 
   // SEO & Marketing
@@ -429,6 +439,25 @@ VehicleSchema.pre('save', async function(this: IVehicle, next) {
   }
   next();
 });
+
+// Virtual fields for profit/loss calculations
+VehicleSchema.virtual('profitLoss').get(function(this: IVehicle) {
+  // Use actualSalePrice if vehicle is sold, otherwise use listPrice for projection
+  const salePrice = this.internal?.actualSalePrice || this.pricing?.listPrice || 0;
+  const acquisitionCost = this.internal?.acquisitionCost || 0;
+  return salePrice - acquisitionCost;
+});
+
+VehicleSchema.virtual('profitMargin').get(function(this: IVehicle) {
+  const salePrice = this.internal?.actualSalePrice || this.pricing?.listPrice || 0;
+  if (salePrice === 0) return 0;
+  const profitLoss = this.get('profitLoss');
+  return ((profitLoss / salePrice) * 100).toFixed(2);
+});
+
+// Enable virtuals in JSON output
+VehicleSchema.set('toJSON', { virtuals: true });
+VehicleSchema.set('toObject', { virtuals: true });
 
 // Export the model
 export const Vehicle = mongoose.model<IVehicle>('Vehicle', VehicleSchema);

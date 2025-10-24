@@ -16,7 +16,21 @@ interface ListParams {
 export const salesTransactionService = {
   async create(payload: ISalesCreateRequest): Promise<ISalesTransaction> {
     const doc = new SalesTransaction(payload as any);
-    return doc.save();
+    const savedDoc = await doc.save();
+    
+    // If sale is created with completed status, update the vehicle
+    if (savedDoc.status === 'completed') {
+      const { Vehicle } = await import('../models/vehicle.js');
+      await Vehicle.findByIdAndUpdate(savedDoc.vehicle, {
+        $set: {
+          'internal.saleTransaction': savedDoc._id,
+          'internal.actualSalePrice': savedDoc.salePrice,
+          'internal.soldDate': savedDoc.closedAt || new Date()
+        }
+      });
+    }
+    
+    return savedDoc;
   },
 
   async getById(id: string) {
@@ -105,7 +119,21 @@ export const salesTransactionService = {
     const doc = await SalesTransaction.findById(id);
     if (!doc) return null;
     if (doc.status !== 'pending') throw new Error('Only pending sales can be completed');
-    return doc.markCompleted();
+    
+    // Complete the sale
+    const completedSale = await doc.markCompleted();
+    
+    // Update the vehicle with sale information
+    const { Vehicle } = await import('../models/vehicle.js');
+    await Vehicle.findByIdAndUpdate(doc.vehicle, {
+      $set: {
+        'internal.saleTransaction': doc._id,
+        'internal.actualSalePrice': doc.salePrice,
+        'internal.soldDate': doc.closedAt || new Date()
+      }
+    });
+    
+    return completedSale;
   },
 
   async markCancelled(id: string) {

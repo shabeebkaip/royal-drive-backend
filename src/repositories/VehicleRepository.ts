@@ -102,6 +102,68 @@ export class VehicleRepository implements IRepository<IVehicle> {
       { $unset: 'transmission.typeData' }
     ];
 
+    // Add profit/loss calculations as virtual fields
+    pipeline.push({
+      $addFields: {
+        profitLoss: {
+          $cond: {
+            if: { $gt: [{ $ifNull: ['$internal.actualSalePrice', 0] }, 0] },
+            then: { $subtract: ['$internal.actualSalePrice', { $ifNull: ['$internal.acquisitionCost', 0] }] },
+            else: { $subtract: [{ $ifNull: ['$pricing.listPrice', 0] }, { $ifNull: ['$internal.acquisitionCost', 0] }] }
+          }
+        },
+        profitMargin: {
+          $cond: {
+            if: { $gt: [{ $ifNull: ['$internal.actualSalePrice', 0] }, 0] },
+            then: {
+              $cond: {
+                if: { $eq: ['$internal.actualSalePrice', 0] },
+                then: '0.00',
+                else: {
+                  $toString: {
+                    $round: [
+                      {
+                        $multiply: [
+                          { $divide: [
+                            { $subtract: ['$internal.actualSalePrice', { $ifNull: ['$internal.acquisitionCost', 0] }] },
+                            '$internal.actualSalePrice'
+                          ]},
+                          100
+                        ]
+                      },
+                      2
+                    ]
+                  }
+                }
+              }
+            },
+            else: {
+              $cond: {
+                if: { $eq: [{ $ifNull: ['$pricing.listPrice', 0] }, 0] },
+                then: '0.00',
+                else: {
+                  $toString: {
+                    $round: [
+                      {
+                        $multiply: [
+                          { $divide: [
+                            { $subtract: [{ $ifNull: ['$pricing.listPrice', 0] }, { $ifNull: ['$internal.acquisitionCost', 0] }] },
+                            { $ifNull: ['$pricing.listPrice', 1] }
+                          ]},
+                          100
+                        ]
+                      },
+                      2
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    } as any);
+
     // Conditionally exclude sensitive internal fields for public access
     if (!includeInternalFields && excludeInternalAcquisitionCost) {
       // Exclude entire internal object for public website access (slug-based lookups)
