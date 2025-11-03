@@ -1,38 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { ICarSubmission } from '../types/carSubmission.d';
 
-const AddressSchema = new Schema({
-  street: {
-    type: String,
-    required: false,
-    trim: true,
-    maxlength: [200, 'Street address cannot exceed 200 characters']
-  },
-  city: {
-    type: String,
-    required: false,
-    trim: true,
-    maxlength: [50, 'City cannot exceed 50 characters']
-  },
-  province: {
-    type: String,
-    required: false,
-    trim: true,
-    maxlength: [50, 'Province cannot exceed 50 characters']
-  },
-  postalCode: {
-    type: String,
-    required: false,
-    trim: true,
-    maxlength: [10, 'Postal code cannot exceed 10 characters']
-  },
-  country: {
-    type: String,
-    default: 'Canada',
-    trim: true
-  }
-}, { _id: false });
-
 const ContactHistorySchema = new Schema({
   date: {
     type: Date,
@@ -191,7 +159,6 @@ const CarSubmissionSchema = new Schema<ICarSubmission>({
       trim: true,
       match: [/^\+?[\d\s-()]+$/, 'Please enter a valid phone number']
     },
-    address: AddressSchema,
     preferredContactMethod: {
       type: String,
       enum: ['email', 'phone', 'either'],

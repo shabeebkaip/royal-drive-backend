@@ -32,13 +32,6 @@ export const validateCreateCarSubmission = [
   body('owner.phone').notEmpty().withMessage('Phone is required').matches(/^\+?[\d\s-()]+$/).withMessage('Invalid phone format'),
   body('owner.preferredContactMethod').optional({ checkFalsy: true }).isIn(['email', 'phone', 'either']).withMessage('Invalid contact method'),
   body('owner.preferredContactTime').optional({ checkFalsy: true }).trim().isLength({ max: 100 }),
-  
-  // Address - All optional for public submission
-  body('owner.address.street').optional({ checkFalsy: true }).trim().isLength({ max: 200 }),
-  body('owner.address.city').optional({ checkFalsy: true }).trim().isLength({ max: 50 }),
-  body('owner.address.province').optional({ checkFalsy: true }).trim().isLength({ max: 50 }),
-  body('owner.address.postalCode').optional({ checkFalsy: true }).trim().isLength({ max: 10 }),
-  body('owner.address.country').optional({ checkFalsy: true }).trim().isLength({ max: 50 }),
 
   // History - All optional for public submission
   body('history.previousOwners').optional().isInt({ min: 1, max: 20 }),

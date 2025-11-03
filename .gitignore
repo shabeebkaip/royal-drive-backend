@@ -24,3 +24,6 @@ yarn.lock
 # Documentation files (exclude README.md which is important)
 *.md
 !README.md
+
+# Scripts folder - utility/migration scripts
+scripts/

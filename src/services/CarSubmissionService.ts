@@ -12,19 +12,13 @@ export class CarSubmissionService {
    * Create a new car submission
    */
   static async createSubmission(data: ICarSubmissionCreateRequest): Promise<ICarSubmission> {
-    const submissionData = {
+    const submissionData: any = {
       vehicle: data.vehicle,
       pricing: {
         ...data.pricing,
         currency: 'CAD'
       },
-      owner: {
-        ...data.owner,
-        address: {
-          ...data.owner.address,
-          country: data.owner.address.country || 'Canada'
-        }
-      },
+      owner: data.owner,
       history: data.history,
       features: data.features,
       media: {

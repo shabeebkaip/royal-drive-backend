@@ -34,14 +34,9 @@ export interface ICarSubmission extends Document {
     lastName: string;
     email: string;
     phone: string;
-    address: {
-      street: string;
-      city: string;
-      province: string;
-      postalCode: string;
-      country: string;
-    };
-    preferredContact: 'email' | 'phone' | 'both';
+    preferredContactMethod?: 'email' | 'phone' | 'either';
+    preferredContactTime?: string;
+    preferredContact?: 'email' | 'phone' | 'both' | 'either';
     bestTimeToCall?: string;
   };
 
@@ -157,14 +152,9 @@ export interface ICarSubmissionCreateRequest {
     lastName: string;
     email: string;
     phone: string;
-    address: {
-      street: string;
-      city: string;
-      province: string;
-      postalCode: string;
-      country?: string;
-    };
-    preferredContact: 'email' | 'phone' | 'both';
+    preferredContactMethod?: 'email' | 'phone' | 'either';
+    preferredContactTime?: string;
+    preferredContact?: 'email' | 'phone' | 'both' | 'either';
     bestTimeToCall?: string;
   };
   history: {
