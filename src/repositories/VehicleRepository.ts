@@ -340,12 +340,33 @@ export class VehicleRepository implements IRepository<IVehicle> {
   ): Promise<PaginatedResult<IVehicle>> {
     const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = options || {};
     const skip = (page - 1) * limit;
-    const sort = { [sortBy]: sortOrder === 'desc' ? -1 as const : 1 as const };
 
     const pipeline = [
       { $match: filter as FilterQuery<IVehicle> },
-  ...this.getPopulationPipeline(false, true),
-      { $sort: sort },
+      ...this.getPopulationPipeline(false, true),
+      // Add status sort priority field (available = 1, sold = 2, others = 3)
+      {
+        $addFields: {
+          statusSortPriority: {
+            $switch: {
+              branches: [
+                { case: { $regexMatch: { input: { $toLower: '$status.name' }, regex: /^available$/i } }, then: 1 },
+                { case: { $regexMatch: { input: { $toLower: '$status.name' }, regex: /^sold$/i } }, then: 2 }
+              ],
+              default: 3
+            }
+          }
+        }
+      },
+      // Sort by status priority first, then by the requested sort field
+      { 
+        $sort: { 
+          statusSortPriority: 1 as const, 
+          [sortBy]: sortOrder === 'desc' ? -1 as const : 1 as const 
+        } 
+      },
+      // Remove the temporary sort field
+      { $unset: 'statusSortPriority' },
       {
         $facet: {
           data: [{ $skip: skip }, { $limit: limit }],
