@@ -339,7 +339,7 @@ const VehicleSchema = new Schema<IVehicle>({
       type: String,
       required: [true, 'Description is required'],
       trim: true,
-      maxlength: [2000, 'Description cannot exceed 2000 characters']
+  // maxlength removed per request to allow longer descriptions
     },
     slug: {
       type: String,
