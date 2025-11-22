@@ -6,6 +6,7 @@ import { createApiResponse } from '../utils/index';
 import { validationResult } from 'express-validator';
 import { canViewInternalData } from '../middleware/auth';
 import { Types } from 'mongoose';
+import Status from '../models/status';
 
 export class VehicleController {
   // Get all vehicles with filtering and pagination
@@ -29,6 +30,15 @@ export class VehicleController {
       if (req.query.status) filter.status = new Types.ObjectId(req.query.status as string);
       if (req.query.vehicleType) filter.type = new Types.ObjectId(req.query.vehicleType as string);
       if (req.query.color) filter['specifications.exteriorColor'] = new RegExp(req.query.color as string, 'i');
+
+      // Handle excludeStatus parameter (e.g., excludeStatus=sold)
+      if (req.query.excludeStatus) {
+        const excludeStatusSlug = (req.query.excludeStatus as string).toLowerCase();
+        const statusToExclude = await Status.findOne({ slug: excludeStatusSlug });
+        if (statusToExclude) {
+          filter.status = { $ne: statusToExclude._id };
+        }
+      }
 
       // Price range filtering
       if (req.query.minPrice || req.query.maxPrice) {
