@@ -1,6 +1,7 @@
 import { Vehicle } from '../models/vehicle';
 import { VehicleEnquiry } from '../models/VehicleEnquiry';
 import { CarSubmission } from '../models/CarSubmission';
+import { ContactEnquiry } from '../models/ContactEnquiry';
 import { User } from '../models/User';
 import { SalesTransaction } from '../models/SalesTransaction';
 import { Make } from '../models/make';
@@ -21,7 +22,7 @@ async function getRedis() {
 export class AnalyticsService {
   /**
    * Get high-level dashboard KPIs and trend data.
-   * period: last_7_days | last_30_days | last_90_days | ytd | custom (with dateFrom/dateTo)
+   * period: last_7_days | last_30_days | last_90_days | ytd | all_time | custom (with dateFrom/dateTo)
    */
   static async getDashboardOverview(params: { period?: string; dateFrom?: string; dateTo?: string }) {
     const { period = 'last_30_days', dateFrom, dateTo } = params;
@@ -37,6 +38,8 @@ export class AnalyticsService {
         start = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000); break;
       case 'ytd':
         start = new Date(now.getFullYear(), 0, 1); break;
+      case 'all_time':
+        start = new Date(0); break; // Unix epoch (January 1, 1970)
       case 'custom':
         start = dateFrom ? new Date(dateFrom) : new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
         break;
@@ -49,12 +52,14 @@ export class AnalyticsService {
     const [
       totalVehicles,
       newVehiclesPeriod,
-      enquiriesPeriod,
-      submissionsPeriod,
+      vehicleEnquiriesPeriod,
+      carSubmissionsPeriod,
+      contactEnquiriesPeriod,
       usersActive,
       vehiclesByStatus,
-      enquiriesByStatus,
-      submissionsByStatus,
+      vehicleEnquiriesByStatus,
+      carSubmissionsByStatus,
+      contactEnquiriesByStatus,
       avgDaysInInventoryAgg,
       topMakes,
       salesPeriodAgg,
@@ -65,10 +70,12 @@ export class AnalyticsService {
       Vehicle.countDocuments({ createdAt: { $gte: start, $lte: end } }),
       VehicleEnquiry.countDocuments({ createdAt: { $gte: start, $lte: end } }),
       CarSubmission.countDocuments({ createdAt: { $gte: start, $lte: end } }),
+      ContactEnquiry.countDocuments({ createdAt: { $gte: start, $lte: end } }),
       User.countDocuments({ status: 'active' }),
       Vehicle.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
       VehicleEnquiry.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
       CarSubmission.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
+      ContactEnquiry.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
       Vehicle.aggregate([
         { $match: { 'internal.acquisitionDate': { $exists: true } } },
         { $project: { days: { $divide: [ { $subtract: [ new Date(), '$internal.acquisitionDate' ] }, 1000 * 60 * 60 * 24 ] } } },
@@ -101,9 +108,9 @@ export class AnalyticsService {
       ])
     ]);
 
-  // Daily trend (vehicles + enquiries + submissions + sales)
+  // Daily trend (vehicles + all enquiry types + submissions + sales)
   // Try cache (include version tag for structure changes)
-  const cacheKey = `analytics:trend:v2:${start.toISOString()}:${end.toISOString()}`;
+  const cacheKey = `analytics:trend:v3:${start.toISOString()}:${end.toISOString()}`;
     let trend: any[] | null = null;
     const redis = await getRedis();
     if (redis) {
@@ -122,10 +129,11 @@ export class AnalyticsService {
       return {
         ...point,
         vehiclesSmoothed: Number(avg(window, 'vehicles').toFixed(2)),
-        enquiriesSmoothed: Number(avg(window, 'enquiries').toFixed(2)),
-    submissionsSmoothed: Number(avg(window, 'submissions').toFixed(2)),
-    salesSmoothed: Number(avg(window, 'sales').toFixed(2)),
-    salesRevenueSmoothed: Number(avg(window, 'salesRevenue').toFixed(2))
+        vehicleEnquiriesSmoothed: Number(avg(window, 'vehicleEnquiries').toFixed(2)),
+        carSubmissionsSmoothed: Number(avg(window, 'carSubmissions').toFixed(2)),
+        contactEnquiriesSmoothed: Number(avg(window, 'contactEnquiries').toFixed(2)),
+        salesSmoothed: Number(avg(window, 'sales').toFixed(2)),
+        salesRevenueSmoothed: Number(avg(window, 'salesRevenue').toFixed(2))
       };
     });
 
@@ -158,8 +166,9 @@ export class AnalyticsService {
       kpis: {
         totalVehicles,
         newVehicles: newVehiclesPeriod,
-        enquiries: enquiriesPeriod,
-        carSubmissions: submissionsPeriod,
+        vehicleEnquiries: vehicleEnquiriesPeriod,
+        carSubmissions: carSubmissionsPeriod,
+        contactEnquiries: contactEnquiriesPeriod,
         activeUsers: usersActive,
         avgDaysInInventory: Number(avgDaysInInventory.toFixed(1)),
         revenue,
@@ -171,8 +180,9 @@ export class AnalyticsService {
       },
       breakdown: {
         vehiclesByStatus: statusMap(vehiclesByStatus),
-        enquiriesByStatus: statusMap(enquiriesByStatus),
-        submissionsByStatus: statusMap(submissionsByStatus)
+        vehicleEnquiriesByStatus: statusMap(vehicleEnquiriesByStatus),
+        carSubmissionsByStatus: statusMap(carSubmissionsByStatus),
+        contactEnquiriesByStatus: statusMap(contactEnquiriesByStatus)
       },
       topMakes: topMakesResolved,
       trend,
@@ -183,7 +193,7 @@ export class AnalyticsService {
     };
   }
 
-  /** Build daily trend combining counts for vehicles, enquiries, submissions, sales */
+  /** Build daily trend combining counts for vehicles, vehicle enquiries, car submissions, contact enquiries, and sales */
   private static async buildDailyTrend(start: Date, end: Date) {
     const pipeline: any[] = [
       { $match: { createdAt: { $gte: start, $lte: end } } },
@@ -196,23 +206,25 @@ export class AnalyticsService {
       { $sort: { _id: 1 as 1 } }
     ];
 
-    const [vehicleTrend, enquiryTrend, submissionTrend, salesTrend] = await Promise.all([
+    const [vehicleTrend, vehicleEnquiryTrend, carSubmissionTrend, contactEnquiryTrend, salesTrend] = await Promise.all([
       Vehicle.aggregate(pipeline),
       VehicleEnquiry.aggregate(pipeline),
       CarSubmission.aggregate(pipeline),
+      ContactEnquiry.aggregate(pipeline),
       SalesTransaction.aggregate(salesPipeline)
     ]);
 
     // Merge dates
     const dateSet = new Set<string>();
-    [vehicleTrend, enquiryTrend, submissionTrend, salesTrend].forEach(arr => arr.forEach(r => dateSet.add(r._id)));
+    [vehicleTrend, vehicleEnquiryTrend, carSubmissionTrend, contactEnquiryTrend, salesTrend].forEach(arr => arr.forEach(r => dateSet.add(r._id)));
     const dates = Array.from(dateSet).sort();
 
     return dates.map(d => ({
       date: d,
       vehicles: vehicleTrend.find(r => r._id === d)?.count || 0,
-      enquiries: enquiryTrend.find(r => r._id === d)?.count || 0,
-      submissions: submissionTrend.find(r => r._id === d)?.count || 0,
+      vehicleEnquiries: vehicleEnquiryTrend.find(r => r._id === d)?.count || 0,
+      carSubmissions: carSubmissionTrend.find(r => r._id === d)?.count || 0,
+      contactEnquiries: contactEnquiryTrend.find(r => r._id === d)?.count || 0,
       sales: salesTrend.find(r => r._id === d)?.count || 0,
       salesRevenue: salesTrend.find(r => r._id === d)?.revenue || 0
     }));

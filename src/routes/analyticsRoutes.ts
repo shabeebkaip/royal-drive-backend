@@ -8,7 +8,7 @@ const router: Router = Router();
 
 // Validation middleware inline
 const validateAnalyticsQuery = [
-  query('period').optional().isIn(['last_7_days','last_30_days','last_90_days','ytd','custom']),
+  query('period').optional().isIn(['last_7_days','last_30_days','last_90_days','ytd','all_time','custom']),
   query('dateFrom').optional().isISO8601(),
   query('dateTo').optional().isISO8601(),
   (req: any, res: any, next: any) => {
