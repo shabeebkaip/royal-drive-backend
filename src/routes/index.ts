@@ -14,6 +14,8 @@ import vehicleEnquiryRoutes from './vehicleEnquiryRoutes';
 import carSubmissionRoutes from './carSubmissionRoutes';
 import analyticsRoutes from './analyticsRoutes';
 import salesTransactionRoutes from './salesTransactionRoutes';
+import contactEnquiryRoutes from './contactEnquiryRoutes';
+import settingsRoutes from './settingsRoutes';
 
 const router: Router = express.Router();
 
@@ -64,6 +66,12 @@ router.use('/analytics', analyticsRoutes);
 
 // Sales Transactions routes
 router.use('/sales', salesTransactionRoutes);
+
+// Contact Enquiry routes
+router.use('/contact-enquiries', contactEnquiryRoutes);
+
+// Settings routes
+router.use('/settings', settingsRoutes);
 
 // Export the router
 export { router as apiRoutes };
