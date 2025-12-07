@@ -1,7 +1,7 @@
-module.exports = {
+export default {
   apps: [{
     name: 'royal-drive-backend',
-    script: 'tsx',
+    script: './node_modules/.bin/tsx',
     args: 'src/index.ts',
     instances: 1,
     autorestart: true,
