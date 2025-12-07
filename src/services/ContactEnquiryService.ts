@@ -137,13 +137,13 @@ export class ContactEnquiryService {
     // Update basic fields
     if (updateData.status) enquiry.status = updateData.status;
     if (updateData.priority) enquiry.priority = updateData.priority;
-    if (updateData.assignedTo) enquiry.assignedTo = new mongoose.Types.ObjectId(updateData.assignedTo);
+    if (updateData.assignedTo) enquiry.assignedTo = updateData.assignedTo as any;
 
     // Add note if provided
     if (updateData.notes && updatedBy) {
       enquiry.notes.push({
         content: updateData.notes.content,
-        createdBy: new mongoose.Types.ObjectId(updatedBy),
+        createdBy: updatedBy as any,
         createdAt: new Date()
       });
     }
@@ -154,14 +154,14 @@ export class ContactEnquiryService {
         date: new Date(),
         method: updateData.contactHistory.method,
         notes: updateData.contactHistory.notes,
-        contactedBy: new mongoose.Types.ObjectId(updatedBy)
+        contactedBy: updatedBy as any
       });
     }
 
     // Auto-resolve if status is resolved
     if (updateData.status === 'resolved' && updatedBy) {
       enquiry.resolvedAt = new Date();
-      enquiry.resolvedBy = new mongoose.Types.ObjectId(updatedBy);
+      enquiry.resolvedBy = updatedBy as any;
     }
 
     await enquiry.save();
@@ -261,7 +261,7 @@ export class ContactEnquiryService {
       throw new Error('Enquiry not found');
     }
 
-    await enquiry.addNote(content, new mongoose.Types.ObjectId(userId));
+    await enquiry.addNote(content, userId as any);
 
     return await ContactEnquiry.findById(enquiryId)
       .populate('notes.createdBy', 'firstName lastName')
@@ -281,7 +281,7 @@ export class ContactEnquiryService {
       throw new Error('Enquiry not found');
     }
 
-    await enquiry.markAsResolved(new mongoose.Types.ObjectId(userId));
+    await enquiry.markAsResolved(userId as any);
 
     return await ContactEnquiry.findById(enquiryId)
       .populate('resolvedBy', 'firstName lastName')

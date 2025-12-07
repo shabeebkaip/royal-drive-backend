@@ -38,14 +38,13 @@ export class App {
                 
                 const allowedOrigins = env.ALLOWED_ORIGINS.split(',').map(url => url.trim());
                 
-                // Log origin for debugging (only in development)
-                if (isDevelopment) {
-                    console.log(`CORS request from origin: ${origin}`);
-                    console.log(`Allowed origins: ${allowedOrigins.join(', ')}`);
-                }
+                // Always log origin for debugging (important for production CORS issues)
+                console.log(`CORS request from origin: ${origin}`);
+                console.log(`Allowed origins: ${allowedOrigins.join(', ')}`);
                 
                 // Check for exact match first
                 if (allowedOrigins.includes(origin)) {
+                    console.log(`✅ CORS allowed (exact match): ${origin}`);
                     return callback(null, true);
                 }
                 
@@ -56,9 +55,13 @@ export class App {
                     }
                     if (allowedOrigin.includes('*')) {
                         // Convert wildcard pattern to regex
-                        const pattern = allowedOrigin.replace(/\*/g, '.*');
+                        const pattern = allowedOrigin.replace(/\*/g, '.*').replace(/\./g, '\\.');
                         const regex = new RegExp(`^${pattern}$`);
-                        return regex.test(origin);
+                        const matches = regex.test(origin);
+                        if (matches) {
+                            console.log(`✅ CORS allowed (wildcard match): ${origin} matched ${allowedOrigin}`);
+                        }
+                        return matches;
                     }
                     return false;
                 });
@@ -68,7 +71,7 @@ export class App {
                 }
                 
                 // Log blocked origin (important for debugging production issues)
-                console.error(`CORS blocked origin: ${origin}`);
+                console.error(`❌ CORS blocked origin: ${origin}`);
                 console.error(`Allowed origins: ${allowedOrigins.join(', ')}`);
                 
                 return callback(new Error('Not allowed by CORS'), false);

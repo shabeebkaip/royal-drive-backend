@@ -24,12 +24,14 @@ export async function generateStockNumber(): Promise<string> {
 
   let sequenceNumber = 1;
   
-  if (lastVehicle) {
+  if (lastVehicle && lastVehicle.internal) {
     // Extract the sequence number from the last stock number
-    const lastStockNumber = lastVehicle.internal.stockNumber;
-    const match = lastStockNumber.match(/RD-\d{4}-(\d{6})$/);
-    if (match) {
-      sequenceNumber = parseInt(match[1]) + 1;
+    const lastStockNumber = (lastVehicle.internal as any).stockNumber;
+    if (lastStockNumber) {
+      const match = lastStockNumber.match(/RD-\d{4}-(\d{6})$/);
+      if (match) {
+        sequenceNumber = parseInt(match[1]) + 1;
+      }
     }
   }
   

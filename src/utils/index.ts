@@ -1,8 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
 
-// Stock number generation utilities
-export * from './generateStockNumber';
 
 // Basic JWT utilities for future use
 export class JwtUtils {
