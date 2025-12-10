@@ -1,9 +1,8 @@
 export default {
   apps: [{
     name: 'royal-drive-backend',
-    script: 'src/index.ts',
-    interpreter: 'node',
-    interpreter_args: '--import tsx',
+    script: 'node_modules/tsx/dist/cli.mjs',
+    args: 'src/index.ts',
     instances: 1,
     autorestart: true,
     watch: false,
@@ -16,9 +15,6 @@ export default {
     out_file: '~/.pm2/logs/royal-drive-backend-out.log',
     log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
     merge_logs: true,
-    // Graceful shutdown
-    kill_timeout: 5000,
-    wait_ready: true,
-    listen_timeout: 10000
+    kill_timeout: 5000
   }]
 };
