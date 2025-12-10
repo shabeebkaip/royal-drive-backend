@@ -21,15 +21,7 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.string().default('7d'),
   
   // CORS
-  ALLOWED_ORIGINS: z.string().default(
-    'http://localhost:3000,http://localhost:5174,http://localhost:5175,' +
-    'https://*.vercel.app,' +
-    'https://royal-drive-admin-gules.vercel.app,' +
-    'https://royaldrivecanada.com,' +
-    'https://www.royaldrivecanada.com,' +
-    'https://api.royaldrivecanada.com,' +
-    'https://*.royaldrivecanada.com'
-  ),
+  ALLOWED_ORIGINS: z.string().default('*'),
   
   // Rate Limiting
   RATE_LIMIT_WINDOW_MS: z.string().transform(Number).default('900000'),

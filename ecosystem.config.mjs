@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   apps: [{
     name: 'royal-drive-backend',
     script: 'src/index.ts',
