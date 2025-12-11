@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { SettingsService } from '../services/SettingsService.js';
-import { IUpdateBusinessSettingsRequest } from '../types/settings.d.js';
+import type { IUpdateBusinessSettingsRequest } from '../types/settings.d.js';
 import { validationResult } from 'express-validator';
 
 // Extend Request type to include user property

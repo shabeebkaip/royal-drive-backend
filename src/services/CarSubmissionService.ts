@@ -1,5 +1,5 @@
 import { CarSubmission, ICarSubmission } from '../models/CarSubmission.js';
-import { 
+import type { 
   ICarSubmissionCreateRequest, 
   ICarSubmissionUpdateRequest, 
   ICarSubmissionQuery,

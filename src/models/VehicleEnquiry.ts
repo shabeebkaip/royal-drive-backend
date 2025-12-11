@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IVehicleEnquiry } from '../types/vehicleEnquiry.d.js';
+import type { IVehicleEnquiry } from '../types/vehicleEnquiry.d.js';
 
 const ContactHistorySchema = new Schema({
   date: {

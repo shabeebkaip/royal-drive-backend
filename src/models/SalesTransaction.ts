@@ -1,7 +1,7 @@
 import mongoose, { Schema, model } from 'mongoose';
 import { Vehicle } from './vehicle.js';
 import Status from './status.js';
-import { ISalesTransaction } from '../types/sales.d.js';
+import type { ISalesTransaction } from '../types/sales.d.js';
 
 const SalesTransactionSchema = new Schema<ISalesTransaction>({
   vehicle: { type: Schema.Types.ObjectId, ref: 'Vehicle', required: true, index: true },

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IContactEnquiry } from '../types/contactEnquiry.d.js';
+import type { IContactEnquiry } from '../types/contactEnquiry.d.js';
 
 const ContactEnquirySchema = new Schema<IContactEnquiry>({
   firstName: {

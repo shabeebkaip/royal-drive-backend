@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 import type { IUser } from '../types/user.d.js';
-import { ROLE_PERMISSIONS } from '../types/user.d.js';
+import { ROLE_PERMISSIONS } from '../types/userPermissions.js';
 
 const userSchema = new Schema<IUser>({
   email: {

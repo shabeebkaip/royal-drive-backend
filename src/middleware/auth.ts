@@ -4,7 +4,7 @@ import { UserRepository } from '../repositories/UserRepository.js';
 import { UnauthorizedError, ForbiddenError } from '../utils/index.js';
 import { env } from '../config/env.js';
 import type { IUser, AuthenticatedRequest } from '../types/user.d.js';
-import { USER_PERMISSIONS } from '../types/user.d.js';
+import { USER_PERMISSIONS } from '../types/userPermissions.js';
 
 const userRepository = new UserRepository();
 

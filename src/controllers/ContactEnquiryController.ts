@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { ContactEnquiryService } from '../services/ContactEnquiryService.js';
-import { IContactEnquiryCreateRequest, IContactEnquiryUpdateRequest } from '../types/contactEnquiry.d.js';
+import type { IContactEnquiryCreateRequest, IContactEnquiryUpdateRequest } from '../types/contactEnquiry.d.js';
 import { validationResult } from 'express-validator';
 
 // Extend Request type to include user property

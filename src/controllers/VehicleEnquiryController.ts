@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { VehicleEnquiryService } from '../services/VehicleEnquiryService.js';
-import { IVehicleEnquiryCreateRequest, IVehicleEnquiryUpdateRequest } from '../types/vehicleEnquiry.d.js';
+import type { IVehicleEnquiryCreateRequest, IVehicleEnquiryUpdateRequest } from '../types/vehicleEnquiry.d.js';
 import { validationResult } from 'express-validator';
 
 // Extend Request type to include user property

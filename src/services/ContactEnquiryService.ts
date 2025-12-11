@@ -1,5 +1,5 @@
 import { ContactEnquiry } from '../models/ContactEnquiry.js';
-import { 
+import type { 
   IContactEnquiry,
   IContactEnquiryCreateRequest, 
   IContactEnquiryUpdateRequest, 

@@ -1,5 +1,5 @@
 import { VehicleEnquiry, IVehicleEnquiry } from '../models/VehicleEnquiry.js';
-import { 
+import type { 
   IVehicleEnquiryCreateRequest, 
   IVehicleEnquiryUpdateRequest, 
   IVehicleEnquiryQuery,
