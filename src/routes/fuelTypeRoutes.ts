@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
-import { FuelTypeController } from '../controllers/FuelTypeController';
+import { FuelTypeController } from '../controllers/FuelTypeController.js';
 import {
   validateCreateFuelType,
   validateUpdateFuelType,
@@ -9,7 +9,7 @@ import {
   validateGetFuelTypeBySlug,
   validateSearchFuelTypes,
   validateListFuelTypes
-} from '../middleware/fuelTypeValidation';
+} from '../middleware/fuelTypeValidation.js';
 
 // Validation error handler
 const handleValidationErrors = (req: Request, res: Response, next: NextFunction): void => {

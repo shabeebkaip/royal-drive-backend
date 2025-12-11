@@ -1,5 +1,5 @@
-import FuelType from '../models/fuelType';
-import { IFuelType, FuelTypeListFilters } from '../types/fuelType';
+import FuelType from '../models/fuelType.js';
+import { IFuelType, FuelTypeListFilters } from '../types/fuelType.js';
 
 export class FuelTypeRepository {
   // Find all fuel types with optional filters

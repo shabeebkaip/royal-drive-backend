@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IBusinessSettings, IBusinessHours, ISocialMedia, IContactInfo, IAddress, ISEOSettings } from '../types/settings.d';
+import { IBusinessSettings, IBusinessHours, ISocialMedia, IContactInfo, IAddress, ISEOSettings } from '../types/settings.d.js';
 
 const BusinessHoursSchema = new Schema<IBusinessHours>({
   day: {

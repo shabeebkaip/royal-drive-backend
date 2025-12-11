@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import {IVehicle} from "../types/vehicle.d";
+import {IVehicle} from '../types/vehicle.d.js';
 
 // Vehicle interface for car dealership in Ontario, Toronto
 const VehicleSchema = new Schema<IVehicle>({

@@ -1,5 +1,5 @@
-import { FuelTypeRepository } from '../repositories/FuelTypeRepository';
-import { IFuelType, FuelTypeListFilters } from '../types/fuelType';
+import { FuelTypeRepository } from '../repositories/FuelTypeRepository.js';
+import { IFuelType, FuelTypeListFilters } from '../types/fuelType.js';
 
 export class FuelTypeService {
   private fuelTypeRepository: FuelTypeRepository;

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { ITransmission } from '../types/transmission';
+import { ITransmission } from '../types/transmission.js';
 
 const transmissionSchema = new Schema<ITransmission>({
   name: {

@@ -1,6 +1,6 @@
 import { FilterQuery } from 'mongoose';
-import { SalesTransaction } from '../models/SalesTransaction';
-import { ISalesTransaction, ISalesCreateRequest, ISalesSummaryRow } from '../types/sales.d';
+import { SalesTransaction } from '../models/SalesTransaction.js';
+import { ISalesTransaction, ISalesCreateRequest, ISalesSummaryRow } from '../types/sales.d.js';
 
 interface ListParams {
   status?: string;

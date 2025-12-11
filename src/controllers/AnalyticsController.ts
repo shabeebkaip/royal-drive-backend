@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { AnalyticsService } from '../services/AnalyticsService';
+import { AnalyticsService } from '../services/AnalyticsService.js';
 
 export class AnalyticsController {
   static async getDashboard(req: Request, res: Response): Promise<Response> {

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createApiResponse } from '../utils/index';
+import { createApiResponse } from '../utils/index.js';
 
 // Example controller for demonstration purposes
 export class ExampleController {

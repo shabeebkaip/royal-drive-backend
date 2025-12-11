@@ -1,4 +1,4 @@
-import type { IModel, ModelListFilters } from '../types/model';
+import type { IModel, ModelListFilters } from '../types/model.js';
 import { ModelRepository } from '@/repositories/ModelRepository';
 
 export class ModelService {

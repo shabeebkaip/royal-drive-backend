@@ -1,5 +1,5 @@
-import { BusinessSettings } from '../models/Settings';
-import { IBusinessSettings, IUpdateBusinessSettingsRequest } from '../types/settings.d';
+import { BusinessSettings } from '../models/Settings.js';
+import { IBusinessSettings, IUpdateBusinessSettingsRequest } from '../types/settings.d.js';
 
 export class SettingsService {
   

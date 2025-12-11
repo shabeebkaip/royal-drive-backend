@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { env } from '../config/env';
+import { env } from '../config/env.js';
 
 
 // Basic JWT utilities for future use
@@ -90,4 +90,4 @@ export const createApiResponse = <T>(
 };
 
 // Export port utilities
-export { getAvailablePort, findAvailablePort, isPortAvailable } from './portUtils';
+export { getAvailablePort, findAvailablePort, isPortAvailable } from './portUtils.js';

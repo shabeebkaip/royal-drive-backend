@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
-import { TransmissionController } from '../controllers/TransmissionController';
-import { transmissionValidation } from '../middleware/transmissionValidation';
+import { TransmissionController } from '../controllers/TransmissionController.js';
+import { transmissionValidation } from '../middleware/transmissionValidation.js';
 
 const router: Router = Router();
 

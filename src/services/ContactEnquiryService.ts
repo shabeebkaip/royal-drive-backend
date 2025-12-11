@@ -1,10 +1,10 @@
-import { ContactEnquiry } from '../models/ContactEnquiry';
+import { ContactEnquiry } from '../models/ContactEnquiry.js';
 import { 
   IContactEnquiry,
   IContactEnquiryCreateRequest, 
   IContactEnquiryUpdateRequest, 
   IContactEnquiryQuery 
-} from '../types/contactEnquiry.d';
+} from '../types/contactEnquiry.d.js';
 import mongoose from 'mongoose';
 
 export class ContactEnquiryService {

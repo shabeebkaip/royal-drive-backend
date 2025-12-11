@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IStatus } from '../types/status';
+import { IStatus } from '../types/status.js';
 
 // Helper function for generating URL-friendly slugs
 function generateSlug(name: string): string {

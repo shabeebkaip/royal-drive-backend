@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { UserRepository } from '../repositories/UserRepository';
-import { UnauthorizedError, ForbiddenError } from '../utils/index';
-import { env } from '../config/env';
-import type { IUser, AuthenticatedRequest } from '../types/user.d';
-import { USER_PERMISSIONS } from '../types/user.d';
+import { UserRepository } from '../repositories/UserRepository.js';
+import { UnauthorizedError, ForbiddenError } from '../utils/index.js';
+import { env } from '../config/env.js';
+import type { IUser, AuthenticatedRequest } from '../types/user.d.js';
+import { USER_PERMISSIONS } from '../types/user.d.js';
 
 const userRepository = new UserRepository();
 

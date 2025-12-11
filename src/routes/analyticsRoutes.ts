@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { AnalyticsController } from '../controllers/AnalyticsController';
-import { authenticate, requireRole } from '../middleware/auth';
+import { AnalyticsController } from '../controllers/AnalyticsController.js';
+import { authenticate, requireRole } from '../middleware/auth.js';
 import { query } from 'express-validator';
 import { validationResult } from 'express-validator';
 

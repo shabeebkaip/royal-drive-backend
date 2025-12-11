@@ -1,6 +1,6 @@
-import type { IVehicle, VehicleListFilters } from '../types/vehicle.d';
-import { VehicleRepository } from '../repositories/VehicleRepository';
-import { cache } from '../utils/cache';
+import type { IVehicle, VehicleListFilters } from '../types/vehicle.d.js';
+import { VehicleRepository } from '../repositories/VehicleRepository.js';
+import { cache } from '../utils/cache.js';
 
 export class VehicleService {
   constructor(private readonly repo: VehicleRepository) {}

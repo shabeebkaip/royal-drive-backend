@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { VehicleEnquiryController } from '../controllers/VehicleEnquiryController';
-import { authenticate, requireRole } from '../middleware/auth';
+import { VehicleEnquiryController } from '../controllers/VehicleEnquiryController.js';
+import { authenticate, requireRole } from '../middleware/auth.js';
 import {
   validateCreateEnquiry,
   validateUpdateEnquiry,
@@ -10,7 +10,7 @@ import {
   validateAssignEnquiry,
   validateAddContactHistory,
   validateEnquiryQuery
-} from '../middleware/vehicleEnquiryValidation';
+} from '../middleware/vehicleEnquiryValidation.js';
 
 const router: Router = Router();
 

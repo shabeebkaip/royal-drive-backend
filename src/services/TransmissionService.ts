@@ -1,10 +1,10 @@
-import { TransmissionRepository } from '../repositories/TransmissionRepository';
+import { TransmissionRepository } from '../repositories/TransmissionRepository.js';
 import { 
   ITransmission, 
   TransmissionListFilters,
   CreateTransmissionRequest,
   UpdateTransmissionRequest 
-} from '../types/transmission';
+} from '../types/transmission.js';
 
 export class TransmissionService {
   // Get all transmissions with filtering and pagination

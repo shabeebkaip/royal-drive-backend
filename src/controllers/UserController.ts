@@ -1,9 +1,9 @@
 import { Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
-import { authService } from '../services/AuthService';
-import { userService } from '../services/UserService';
-import { createApiResponse } from '../utils/index';
-import type { AuthenticatedRequest, LoginRequest, CreateUserRequest } from '../types/user.d';
+import { authService } from '../services/AuthService.js';
+import { userService } from '../services/UserService.js';
+import { createApiResponse } from '../utils/index.js';
+import type { AuthenticatedRequest, LoginRequest, CreateUserRequest } from '../types/user.d.js';
 
 export class UserController {
   // Login

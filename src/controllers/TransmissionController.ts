@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { TransmissionService } from '../services/TransmissionService';
+import { TransmissionService } from '../services/TransmissionService.js';
 
 export class TransmissionController {
   // GET /transmissions - Get all transmissions with filtering and pagination

@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { SalesTransactionController } from '../controllers/SalesTransactionController';
-import { createSalesValidation, updateSalesValidation } from '../middleware/salesTransactionValidation';
-import { authenticate } from '../middleware/auth';
+import { SalesTransactionController } from '../controllers/SalesTransactionController.js';
+import { createSalesValidation, updateSalesValidation } from '../middleware/salesTransactionValidation.js';
+import { authenticate } from '../middleware/auth.js';
 
 const router: Router = Router();
 

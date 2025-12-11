@@ -1,4 +1,4 @@
-import type { IMake, MakeListFilters } from '../types/make';
+import type { IMake, MakeListFilters } from '../types/make.js';
 import { MakeRepository } from '@/repositories/MakeRepository';
 
 export class MakeService {

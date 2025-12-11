@@ -1,6 +1,6 @@
 import { FilterQuery, MongooseError, SortOrder } from 'mongoose';
-import { Vehicle } from '../models/vehicle';
-import type { IVehicle } from '../types/vehicle.d';
+import { Vehicle } from '../models/vehicle.js';
+import type { IVehicle } from '../types/vehicle.d.js';
 
 
 export class VehicleRepository implements IRepository<IVehicle> {

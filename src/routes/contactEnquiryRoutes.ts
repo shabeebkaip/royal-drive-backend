@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { ContactEnquiryController } from '../controllers/ContactEnquiryController';
-import { authenticate, requireRole } from '../middleware/auth';
+import { ContactEnquiryController } from '../controllers/ContactEnquiryController.js';
+import { authenticate, requireRole } from '../middleware/auth.js';
 import {
   validateCreateContactEnquiry,
   validateUpdateContactEnquiry,
@@ -8,7 +8,7 @@ import {
   validateGetEnquiries,
   validateAssignEnquiry,
   validateAddNote
-} from '../middleware/contactEnquiryValidation';
+} from '../middleware/contactEnquiryValidation.js';
 
 const router: Router = Router();
 

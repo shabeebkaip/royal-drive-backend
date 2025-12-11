@@ -3,7 +3,7 @@
  * Run this script to ensure all necessary indexes are created
  */
 
-import { Vehicle } from '../models/vehicle';
+import { Vehicle } from '../models/vehicle.js';
 
 export async function createVehicleIndexes() {
   console.log('Creating vehicle indexes for optimal performance...');

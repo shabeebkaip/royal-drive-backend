@@ -1,5 +1,5 @@
-import Status from '../models/status';
-import { IStatus, StatusListFilters } from '../types/status';
+import Status from '../models/status.js';
+import { IStatus, StatusListFilters } from '../types/status.js';
 
 export class StatusRepository {
   // Get all statuses with filtering and pagination

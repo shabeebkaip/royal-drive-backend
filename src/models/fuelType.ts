@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IFuelType } from '../types/fuelType';
+import { IFuelType } from '../types/fuelType.js';
 
 const fuelTypeSchema = new Schema<IFuelType>({
   name: {

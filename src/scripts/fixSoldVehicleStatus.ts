@@ -3,10 +3,10 @@
  */
 
 import mongoose from 'mongoose';
-import { database } from '../config/database';
-import { SalesTransaction } from '../models/SalesTransaction';
-import { Vehicle } from '../models/vehicle';
-import Status from '../models/status';
+import { database } from '../config/database.js';
+import { SalesTransaction } from '../models/SalesTransaction.js';
+import { Vehicle } from '../models/vehicle.js';
+import Status from '../models/status.js';
 
 async function fixExistingSales() {
   await database.connect();

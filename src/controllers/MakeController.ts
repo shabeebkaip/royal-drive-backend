@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import type { IMake } from '../types/make';
-import { makeService } from '../services/MakeService';
+import type { IMake } from '../types/make.js';
+import { makeService } from '../services/MakeService.js';
 import { createApiResponse } from '@/utils/index';
 import { validationResult } from 'express-validator';
 

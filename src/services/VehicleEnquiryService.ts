@@ -1,10 +1,10 @@
-import { VehicleEnquiry, IVehicleEnquiry } from '../models/VehicleEnquiry';
+import { VehicleEnquiry, IVehicleEnquiry } from '../models/VehicleEnquiry.js';
 import { 
   IVehicleEnquiryCreateRequest, 
   IVehicleEnquiryUpdateRequest, 
   IVehicleEnquiryQuery,
   IVehicleEnquiryStats 
-} from '../types/vehicleEnquiry.d';
+} from '../types/vehicleEnquiry.d.js';
 
 export class VehicleEnquiryService {
   

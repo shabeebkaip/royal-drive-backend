@@ -1,11 +1,11 @@
-import { Vehicle } from '../models/vehicle';
-import { VehicleEnquiry } from '../models/VehicleEnquiry';
-import { CarSubmission } from '../models/CarSubmission';
-import { ContactEnquiry } from '../models/ContactEnquiry';
-import { User } from '../models/User';
-import { SalesTransaction } from '../models/SalesTransaction';
-import { Make } from '../models/make';
-import { env } from '../config/env';
+import { Vehicle } from '../models/vehicle.js';
+import { VehicleEnquiry } from '../models/VehicleEnquiry.js';
+import { CarSubmission } from '../models/CarSubmission.js';
+import { ContactEnquiry } from '../models/ContactEnquiry.js';
+import { User } from '../models/User.js';
+import { SalesTransaction } from '../models/SalesTransaction.js';
+import { Make } from '../models/make.js';
+import { env } from '../config/env.js';
 import { createClient, RedisClientType } from 'redis';
 
 // Lazy Redis client (optional)

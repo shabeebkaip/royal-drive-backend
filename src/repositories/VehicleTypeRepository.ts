@@ -1,6 +1,6 @@
 import { FilterQuery } from 'mongoose';
-import { VehicleType } from '../models/vehicleType';
-import type { IVehicleType, VehicleTypeListFilters } from '../types/vehicleType';
+import { VehicleType } from '../models/vehicleType.js';
+import type { IVehicleType, VehicleTypeListFilters } from '../types/vehicleType.js';
 
 export class VehicleTypeRepository implements IRepository<IVehicleType> {
   async create(data: Partial<IVehicleType>): Promise<IVehicleType> {

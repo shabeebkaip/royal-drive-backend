@@ -1,10 +1,10 @@
-import { CarSubmission, ICarSubmission } from '../models/CarSubmission';
+import { CarSubmission, ICarSubmission } from '../models/CarSubmission.js';
 import { 
   ICarSubmissionCreateRequest, 
   ICarSubmissionUpdateRequest, 
   ICarSubmissionQuery,
   ICarSubmissionStats 
-} from '../types/carSubmission.d';
+} from '../types/carSubmission.d.js';
 
 export class CarSubmissionService {
   

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { uploadService } from '../services/UploadService';
+import { uploadService } from '../services/UploadService.js';
 import { createApiResponse } from '@/utils/index';
 
 export class UploadController {

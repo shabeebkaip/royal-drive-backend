@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { CarSubmissionService } from '../services/CarSubmissionService';
+import { CarSubmissionService } from '../services/CarSubmissionService.js';
 import { validationResult } from 'express-validator';
-import { ICarSubmissionCreateRequest, ICarSubmissionUpdateRequest } from '../types/carSubmission.d';
-import { AuthenticatedRequest } from '../types/user.d';
+import { ICarSubmissionCreateRequest, ICarSubmissionUpdateRequest } from '../types/carSubmission.d.js';
+import { AuthenticatedRequest } from '../types/user.d.js';
 
 export class CarSubmissionController {
   /**

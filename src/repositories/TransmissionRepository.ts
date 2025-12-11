@@ -1,5 +1,5 @@
-import Transmission from '../models/transmission';
-import { ITransmission, TransmissionListFilters } from '../types/transmission';
+import Transmission from '../models/transmission.js';
+import { ITransmission, TransmissionListFilters } from '../types/transmission.js';
 
 export class TransmissionRepository {
   // Get all transmissions with filtering and pagination

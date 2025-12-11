@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { CarSubmissionController } from '../controllers/CarSubmissionController';
-import { authenticate, requireRole } from '../middleware/auth';
+import { CarSubmissionController } from '../controllers/CarSubmissionController.js';
+import { authenticate, requireRole } from '../middleware/auth.js';
 import {
   validateCreateCarSubmission,
   validateUpdateCarSubmission,
   validateAssignCarSubmission,
   validateAddContactHistoryCarSubmission,
   validateCarSubmissionQuery
-} from '../middleware/carSubmissionValidation';
+} from '../middleware/carSubmissionValidation.js';
 
 // Roles allowed to manage submissions
 const MANAGEMENT_ROLES = ['superAdmin', 'admin', 'manager', 'salesperson'] as const;

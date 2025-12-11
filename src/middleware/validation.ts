@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
-import { AppError } from '../utils/index';
+import { AppError } from '../utils/index.js';
 
 // Basic validation schemas for starter pack
 export const paginationSchema = z.object({

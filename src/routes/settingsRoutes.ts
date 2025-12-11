@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { SettingsController } from '../controllers/SettingsController';
-import { authenticate, requireRole } from '../middleware/auth';
+import { SettingsController } from '../controllers/SettingsController.js';
+import { authenticate, requireRole } from '../middleware/auth.js';
 import {
   validateUpdateSettings,
   validateUpdateSocialMedia,
   validateUpdateAddress
-} from '../middleware/settingsValidation';
+} from '../middleware/settingsValidation.js';
 
 const router: Router = Router();
 

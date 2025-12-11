@@ -1,5 +1,5 @@
-import DriveType from '../models/driveType';
-import { IDriveType, DriveTypeListFilters } from '../types/driveType';
+import DriveType from '../models/driveType.js';
+import { IDriveType, DriveTypeListFilters } from '../types/driveType.js';
 
 export class DriveTypeRepository {
   // Get all drive types with filtering and pagination

@@ -1,4 +1,4 @@
-import type { IVehicleType, VehicleTypeListFilters } from '../types/vehicleType';
+import type { IVehicleType, VehicleTypeListFilters } from '../types/vehicleType.js';
 import { VehicleTypeRepository } from '@/repositories/VehicleTypeRepository';
 
 export class VehicleTypeService {

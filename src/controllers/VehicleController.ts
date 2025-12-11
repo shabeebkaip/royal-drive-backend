@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import type { IVehicle, CreateVehicleRequest } from '../types/vehicle.d';
-import type { AuthenticatedRequest } from '../types/user.d';
-import { vehicleService } from '../services/VehicleService';
-import { createApiResponse } from '../utils/index';
+import type { IVehicle, CreateVehicleRequest } from '../types/vehicle.d.js';
+import type { AuthenticatedRequest } from '../types/user.d.js';
+import { vehicleService } from '../services/VehicleService.js';
+import { createApiResponse } from '../utils/index.js';
 import { validationResult } from 'express-validator';
-import { canViewInternalData } from '../middleware/auth';
+import { canViewInternalData } from '../middleware/auth.js';
 import { Types } from 'mongoose';
-import Status from '../models/status';
+import Status from '../models/status.js';
 
 export class VehicleController {
   // Get all vehicles with filtering and pagination

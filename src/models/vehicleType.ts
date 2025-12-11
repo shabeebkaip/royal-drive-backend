@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IVehicleType } from '../types/vehicleType';
+import { IVehicleType } from '../types/vehicleType.js';
 
 // Helper function for generating URL-friendly slugs
 function generateSlug(name: string): string {

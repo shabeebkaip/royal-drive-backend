@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import { salesTransactionService } from '../services/salesTransactionService';
-import { createApiResponse } from '../utils';
+import { salesTransactionService } from '../services/salesTransactionService.js';
+import { createApiResponse } from '../utils/index.js';
 
 export class SalesTransactionController {
   static async list(req: Request, res: Response) {
