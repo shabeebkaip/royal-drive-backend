@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { StatusService } from '../services/StatusService.js';
-import { createApiResponse } from '@/utils';
+import { createApiResponse } from '../utils/index.js';
 import { StatusListFilters, CreateStatusRequest, UpdateStatusRequest, UpdateStatusStatusRequest } from '../types/status.js';
 
 const statusService = new StatusService();

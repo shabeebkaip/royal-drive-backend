@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import type { IModel } from '../types/model.js';
 import { modelService } from '../services/ModelService.js';
-import { createApiResponse } from '@/utils/index';
+import { createApiResponse } from '../utils/index.js';
 import { validationResult } from 'express-validator';
 import mongoose from 'mongoose';
 

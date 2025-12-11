@@ -1,6 +1,6 @@
 import { body, validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
-import { createApiResponse } from '@/utils';
+import { createApiResponse } from '../utils/index.js';
 
 // Validation for creating drive type
 export const validateDriveType = [

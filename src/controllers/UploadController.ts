@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { uploadService } from '../services/UploadService.js';
-import { createApiResponse } from '@/utils/index';
+import { createApiResponse } from '../utils/index.js';
 
 export class UploadController {
   static async uploadSingle(req: Request, res: Response): Promise<void> {

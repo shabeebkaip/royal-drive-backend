@@ -1,5 +1,5 @@
 import type { IModel, ModelListFilters } from '../types/model.js';
-import { ModelRepository } from '@/repositories/ModelRepository';
+import { ModelRepository } from '../repositories/ModelRepository.js';
 
 export class ModelService {
   constructor(private readonly repo: ModelRepository) {}

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { DriveTypeService } from '../services/DriveTypeService.js';
-import { createApiResponse } from '@/utils';
+import { createApiResponse } from '../utils/index.js';
 import { DriveTypeListFilters, CreateDriveTypeRequest, UpdateDriveTypeRequest, UpdateDriveTypeStatusRequest } from '../types/driveType.js';
 
 const driveTypeService = new DriveTypeService();

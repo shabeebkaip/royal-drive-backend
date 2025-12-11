@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { StatusController } from '@/controllers/StatusController';
+import { StatusController } from '../controllers/StatusController.js';
 import {
   validateStatus,
   validateStatusUpdate,
   validateStatusStatus,
   validateBulkStatusUpdate,
   handleValidationErrors
-} from '@/middleware/statusValidation';
+} from '../middleware/statusValidation.js';
 
 const router: Router = Router();
 

@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { DriveTypeController } from '@/controllers/DriveTypeController';
+import { DriveTypeController } from '../controllers/DriveTypeController.js';
 import {
   validateDriveType,
   validateDriveTypeUpdate,
   validateDriveTypeStatus,
   validateBulkStatusUpdate,
   handleValidationErrors
-} from '@/middleware/driveTypeValidation';
+} from '../middleware/driveTypeValidation.js';
 
 const router: Router = Router();
 

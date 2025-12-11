@@ -1,4 +1,4 @@
-import { StatusRepository } from '@/repositories/StatusRepository';
+import { StatusRepository } from '../repositories/StatusRepository.js';
 import { IStatus, StatusListFilters, CreateStatusRequest, UpdateStatusRequest, UpdateStatusStatusRequest } from '../types/status.js';
 
 export class StatusService {
